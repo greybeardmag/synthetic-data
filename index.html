@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthetic Data in Healthcare — SickKids Strategic Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --midnight: #0a1628;
+    --deep: #111d33;
+    --navy: #162a4a;
+    --slate: #2a3f5f;
+    --steel: #5a7194;
+    --silver: #8fa3c0;
+    --ice: #c5d3e8;
+    --frost: #e8eef6;
+    --white: #f6f8fc;
+    --teal: #00c9a7;
+    --teal-glow: #00e6bf;
+    --teal-dark: #009e84;
+    --coral: #ff6b6b;
+    --coral-light: #ff8a8a;
+    --amber: #ffc75f;
+    --violet: #845ef7;
+    --violet-light: #a78bfa;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--midnight);
+    color: var(--ice);
+    line-height: 1.7;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--midnight); }
+  ::-webkit-scrollbar-thumb { background: var(--slate); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--teal-dark); }
+
+  /* ─── NAVIGATION ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 22, 40, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 201, 167, 0.1);
+    padding: 0 2rem;
+    transition: all 0.3s ease;
+  }
+
+  nav .nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  nav .logo {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.02em;
+  }
+
+  nav .logo span { color: var(--silver); font-weight: 300; }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav ul li a {
+    color: var(--silver);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul li a:hover { color: var(--teal); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(circle, rgba(0,201,167,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -20%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(132,94,247,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 900px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border: 1px solid rgba(0,201,167,0.3);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 2rem;
+    background: rgba(0,201,167,0.05);
+  }
+
+  h1 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--teal);
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--silver);
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2rem;
+    background: var(--teal);
+    color: var(--midnight);
+    text-decoration: none;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(0,201,167,0.2);
+  }
+
+  .hero-cta:hover {
+    background: var(--teal-glow);
+    box-shadow: 0 0 50px rgba(0,201,167,0.35);
+    transform: translateY(-2px);
+  }
+
+  .hero-cta svg { width: 18px; height: 18px; }
+
+  /* ─── SECTIONS ─── */
+  section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  h2 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-intro {
+    font-size: 1.05rem;
+    color: var(--silver);
+    max-width: 700px;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .divider hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,201,167,0.2), transparent);
+  }
+
+  /* ─── WHAT IS SECTION ─── */
+  .what-is-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .what-is-text p {
+    color: var(--ice);
+    margin-bottom: 1rem;
+    font-weight: 300;
+  }
+
+  .what-is-text p strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  /* ─── PIPELINE DIAGRAM ─── */
+  .pipeline {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.2);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    position: relative;
+  }
+
+  .pipeline-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--teal);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 0;
+    position: relative;
+  }
+
+  .pipeline-step::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(0,201,167,0.15);
+  }
+
+  .pipeline-step:first-child::before { top: 50%; }
+  .pipeline-step:last-child::before { bottom: 50%; }
+
+  .step-dot {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+  }
+
+  .step-dot.teal { background: rgba(0,201,167,0.15); color: var(--teal); border: 2px solid var(--teal); }
+  .step-dot.violet { background: rgba(132,94,247,0.15); color: var(--violet-light); border: 2px solid var(--violet); }
+  .step-dot.amber { background: rgba(255,199,95,0.15); color: var(--amber); border: 2px solid var(--amber); }
+
+  .step-info h4 {
+    font-size: 0.9rem;
+    color: var(--white);
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+  }
+
+  .step-info p {
+    font-size: 0.78rem;
+    color: var(--steel);
+    font-weight: 300;
+  }
+
+  /* ─── BENEFITS / CHALLENGES GRID ─── */
+  .bc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .bc-card {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: visible;
+  }
+
+  .bc-card:hover {
+    border-color: rgba(0,201,167,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+
+  .bc-card.challenge:hover {
+    border-color: rgba(255,107,107,0.25);
+  }
+
+  .bc-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .bc-card.benefit::before { background: linear-gradient(90deg, var(--teal), var(--teal-glow)); }
+  .bc-card.challenge::before { background: linear-gradient(90deg, var(--coral), var(--coral-light)); }
+
+  .bc-icon {
+    display: none;
+  }
+
+  .bc-card h3 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .bc-card h3 .h-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: var(--radius-xs);
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .benefit h3 .h-icon { background: rgba(0,201,167,0.1); }
+  .challenge h3 .h-icon { background: rgba(255,107,107,0.1); }
+
+  .bc-card p {
+    color: var(--silver);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ─── CHARTS SECTION ─── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .chart-box {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+
+  .chart-box h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* ─── BAR CHART ─── */
+  .bar-chart { display: flex; flex-direction: column; gap: 1rem; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 50px;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bar-label {
+    font-size: 0.78rem;
+    color: var(--silver);
+    text-align: right;
+    font-weight: 400;
+  }
+
+  .bar-track {
+    height: 28px;
+    background: rgba(90,113,148,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+  }
+
+  .bar-fill.teal { background: linear-gradient(90deg, var(--teal-dark), var(--teal)); }
+  .bar-fill.violet { background: linear-gradient(90deg, #6236c7, var(--violet)); }
+  .bar-fill.amber { background: linear-gradient(90deg, #cc9a33, var(--amber)); }
+  .bar-fill.coral { background: linear-gradient(90deg, #cc4444, var(--coral)); }
+
+  .bar-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--white);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* ─── DONUT CHART ─── */
+  .donut-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .donut-svg { width: 180px; height: 180px; }
+
+  .donut-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    min-width: 10px;
+  }
+
+  .legend-text {
+    font-size: 0.78rem;
+    color: var(--silver);
+    line-height: 1.3;
+  }
+
+  .legend-text strong {
+    color: var(--white);
+    font-weight: 600;
+    display: block;
+    font-size: 0.82rem;
+  }
+
+  /* ─── FIDELITY SPECTRUM ─── */
+  .fidelity-spectrum {
+    padding: 1.5rem 0;
+  }
+
+  .spectrum-track {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--coral) 0%, var(--amber) 40%, var(--teal) 100%);
+    position: relative;
+    margin: 2rem 0 1rem;
+  }
+
+  .spectrum-labels {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .spectrum-label {
+    font-size: 0.72rem;
+    color: var(--silver);
+    font-weight: 500;
+  }
+
+  .spectrum-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+
+  .spectrum-marker {
+    text-align: center;
+    flex: 1;
+  }
+
+  .spectrum-marker .emoji { font-size: 1.4rem; margin-bottom: 0.4rem; }
+
+  .spectrum-marker p {
+    font-size: 0.72rem;
+    color: var(--steel);
+    line-height: 1.4;
+  }
+
+  .spectrum-marker strong {
+    display: block;
+    color: var(--white);
+    font-size: 0.78rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ─── PRIVACY-UTILITY TRADEOFF ─── */
+  .tradeoff-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+
+  .tradeoff-axis {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .tradeoff-axis-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    width: 80px;
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .tradeoff-axis-label.privacy { color: var(--teal); }
+  .tradeoff-axis-label.utility { color: var(--violet-light); }
+
+  .tradeoff-bars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .tradeoff-bar-track {
+    height: 20px;
+    background: rgba(90,113,148,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .tradeoff-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.5s ease;
+  }
+
+  .tradeoff-scenarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .tradeoff-scenario {
+    background: rgba(90,113,148,0.08);
+    border-radius: var(--radius-sm);
+    padding: 1.2rem;
+    text-align: center;
+    border: 1px solid rgba(90,113,148,0.12);
+  }
+
+  .tradeoff-scenario h5 {
+    font-size: 0.78rem;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .tradeoff-meters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .meter-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .meter-label {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    width: 52px;
+    text-align: right;
+  }
+
+  .meter-label.priv { color: var(--teal); }
+  .meter-label.util { color: var(--violet-light); }
+
+  .meter-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(90,113,148,0.12);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .meter-fill.priv { background: var(--teal); }
+  .meter-fill.util { background: var(--violet); }
+
+  /* ─── COMMERCIALIZATION SECTION ─── */
+  .comm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .comm-card {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+
+  .comm-card h4 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .comm-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .comm-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    color: var(--ice);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .comm-list li .dot {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    margin-top: 0.55rem;
+  }
+
+  .comm-list li .dot.green { background: var(--teal); }
+  .comm-list li .dot.red { background: var(--coral); }
+  .comm-list li .dot.amber { background: var(--amber); }
+
+  /* ─── VENDOR COMPARISON TABLE ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    background: rgba(0,201,167,0.08);
+    color: var(--teal);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,201,167,0.15);
+  }
+
+  tbody td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid rgba(90,113,148,0.1);
+    color: var(--ice);
+    font-weight: 300;
+  }
+
+  tbody tr:hover { background: rgba(90,113,148,0.06); }
+
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 100px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .tag.open { background: rgba(0,201,167,0.12); color: var(--teal); }
+  .tag.commercial { background: rgba(132,94,247,0.12); color: var(--violet-light); }
+
+  /* ─── PEDIATRIC CALLOUT ─── */
+  .callout {
+    background: linear-gradient(135deg, rgba(0,201,167,0.06), rgba(132,94,247,0.04));
+    border: 1px solid rgba(0,201,167,0.2);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    margin-top: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0,201,167,0.08), transparent 70%);
+    pointer-events: none;
+  }
+
+  .callout h3 { color: var(--teal-glow); }
+
+  .callout p {
+    color: var(--ice);
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ─── RECOMMENDATION SECTION ─── */
+  .rec-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+    counter-reset: recstep;
+  }
+
+  .rec-step {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 2rem;
+    position: relative;
+    counter-increment: recstep;
+  }
+
+  .rec-step::before {
+    content: counter(recstep, decimal-leading-zero);
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: rgba(0,201,167,0.12);
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    line-height: 1;
+  }
+
+  .rec-step h4 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .rec-step p {
+    font-size: 0.88rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ─── SUITABILITY PANELS ─── */
+  .suit-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .suit-panel {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    align-items: center;
+    transition: border-color 0.3s;
+  }
+
+  .suit-panel:hover { border-color: rgba(90,113,148,0.3); }
+
+  .suit-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .suit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .suit-badge.high { background: rgba(0,201,167,0.12); color: var(--teal); }
+  .suit-badge.moderate { background: rgba(255,199,95,0.12); color: var(--amber); }
+  .suit-badge.low { background: rgba(255,107,107,0.12); color: var(--coral); }
+  .suit-badge.caution { background: rgba(132,94,247,0.12); color: var(--violet-light); }
+
+  .suit-title {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .suit-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .suit-tag {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: rgba(90,113,148,0.12);
+    color: var(--silver);
+    border: 1px solid rgba(90,113,148,0.15);
+  }
+
+  .suit-body {
+    font-size: 0.85rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .suit-meters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .suit-meter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .suit-meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .suit-meter-label {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .suit-meter-label.fidelity { color: var(--teal); }
+  .suit-meter-label.privacy { color: var(--violet-light); }
+  .suit-meter-label.volume { color: var(--amber); }
+  .suit-meter-label.commercial { color: var(--coral-light); }
+
+  .suit-meter-value {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--steel);
+  }
+
+  .suit-meter-track {
+    height: 8px;
+    background: rgba(90,113,148,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .suit-meter-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+
+  .suit-meter-fill.fidelity { background: linear-gradient(90deg, var(--teal-dark), var(--teal)); }
+  .suit-meter-fill.privacy { background: linear-gradient(90deg, #6236c7, var(--violet)); }
+  .suit-meter-fill.volume { background: linear-gradient(90deg, #cc9a33, var(--amber)); }
+  .suit-meter-fill.commercial { background: linear-gradient(90deg, #cc4444, var(--coral)); }
+
+  .suit-callout {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: rgba(90,113,148,0.06);
+    border-radius: var(--radius-xs);
+    border-left: 3px solid;
+    font-size: 0.76rem;
+    color: var(--ice);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .suit-callout.green { border-color: var(--teal); }
+  .suit-callout.amber { border-color: var(--amber); }
+  .suit-callout.red { border-color: var(--coral); }
+
+  .suit-callout strong {
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  @media (max-width: 900px) {
+    .suit-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(90,113,148,0.1);
+    margin-top: 2rem;
+  }
+
+  footer p {
+    font-size: 0.78rem;
+    color: var(--steel);
+    font-weight: 300;
+  }
+
+  footer a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .what-is-grid, .charts-grid, .comm-grid { grid-template-columns: 1fr; }
+    .bc-grid { grid-template-columns: 1fr; }
+    .tradeoff-scenarios { grid-template-columns: 1fr; }
+    .suit-panel { grid-template-columns: 1fr; }
+    nav ul { display: none; }
+    .bar-row { grid-template-columns: 90px 1fr 40px; }
+    .donut-container { flex-direction: column; }
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── GENERATION METHODS COMPARISON ─── */
+  .gen-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .gen-method {
+    background: var(--deep);
+    border: 1px solid rgba(90,113,148,0.15);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+
+  .gen-method:hover { border-color: rgba(0,201,167,0.3); }
+
+  .gen-method .method-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .gen-method h4 {
+    font-size: 0.9rem;
+    color: var(--white);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .gen-method p {
+    font-size: 0.78rem;
+    color: var(--steel);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .gen-method .strength {
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── TOOLTIPS ─── */
+  .term {
+    position: relative;
+    display: inline;
+    color: var(--teal);
+    cursor: help;
+    border-bottom: 1px dashed rgba(0,201,167,0.4);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .term:hover {
+    color: var(--teal-glow);
+    border-color: var(--teal-glow);
+  }
+
+  .term .term-q {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(0,201,167,0.15);
+    color: var(--teal);
+    font-size: 0.55rem;
+    font-weight: 700;
+    margin-left: 2px;
+    vertical-align: super;
+    line-height: 1;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .tooltip-panel {
+    display: none;
+    position: absolute;
+    width: 380px;
+    max-width: 92vw;
+    background: var(--navy);
+    border: 1px solid rgba(0,201,167,0.25);
+    border-radius: var(--radius-sm);
+    padding: 1.3rem 1.5rem;
+    z-index: 9999;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,201,167,0.08);
+    text-align: left;
+    pointer-events: auto;
+  }
+
+  .tooltip-panel.show {
+    display: block;
+    animation: tooltipIn 0.2s ease;
+  }
+
+  @keyframes tooltipIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tooltip-panel .tooltip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: var(--navy);
+    border-right: 1px solid rgba(0,201,167,0.25);
+    border-bottom: 1px solid rgba(0,201,167,0.25);
+    pointer-events: none;
+  }
+
+  .tooltip-panel.flip-y .tooltip-arrow {
+    bottom: auto;
+    top: -7px;
+    border-right: none;
+    border-bottom: none;
+    border-left: 1px solid rgba(0,201,167,0.25);
+    border-top: 1px solid rgba(0,201,167,0.25);
+  }
+
+  .tooltip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+
+  .tooltip-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tooltip-close {
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: rgba(90,113,148,0.15);
+    color: var(--silver);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .tooltip-close:hover { background: rgba(255,107,107,0.2); color: var(--coral); }
+
+  .tooltip-body {
+    font-size: 0.82rem;
+    color: var(--ice);
+    font-weight: 300;
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .tooltip-example {
+    background: rgba(90,113,148,0.1);
+    border-radius: var(--radius-xs);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.76rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 0.85rem;
+    border-left: 3px solid var(--teal-dark);
+  }
+
+  .tooltip-example strong {
+    color: var(--amber);
+    font-weight: 600;
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .tooltip-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--teal);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .tooltip-link:hover { color: var(--teal-glow); text-decoration: underline; }
+
+  .tooltip-link svg { width: 12px; height: 12px; }
+
+  .chart-source {
+    margin-top: 1.25rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(90,113,148,0.12);
+    font-size: 0.68rem;
+    color: var(--steel);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .chart-source a {
+    color: var(--teal);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .chart-source a:hover { color: var(--teal-glow); text-decoration: underline; }
+
+  .chart-source strong {
+    color: var(--silver);
+    font-weight: 500;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 900px) {
+    .tooltip-panel {
+      width: 300px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">SyntheticData<span>.health</span></div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#benefits">Benefits</a></li>
+      <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#analysis">Analysis</a></li>
+      <li><a href="#suitability">Suitability</a></li>
+      <li><a href="#commercial">Commercial</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="bittensor.html" style="color:var(--violet-light)">Bittensor ↗</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content fade-in">
+    <div class="hero-badge">SickKids Toronto — Strategic Assessment 2026</div>
+    <h1>Synthetic Data in<br><em>Pediatric Healthcare</em></h1>
+    <p class="hero-sub">
+      A comprehensive assessment of the benefits, challenges, and commercial viability
+      of generating and licensing synthetic datasets from SickKids' clinical data assets.
+    </p>
+    <a href="#overview" class="hero-cta">
+      Explore the Analysis
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m0 0l-6-6m6 6l6-6"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- WHAT IS SYNTHETIC DATA -->
+<section id="overview">
+  <div class="fade-in">
+    <span class="section-label">01 — Foundation</span>
+    <h2>What Is Synthetic Healthcare Data?</h2>
+    <div class="what-is-grid">
+      <div class="what-is-text">
+        <p>
+          <strong>Synthetic data is artificially generated information</strong> that replicates the statistical properties, patterns, and correlations of real patient records — without containing any actual patient information. Unlike <span class="term" onclick="toggleTip(this)">de-identified data<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">De-Identified Data</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">Data where personal identifiers (name, DOB, health card number, etc.) have been removed or obscured. The underlying records still come from real patients — they've just had identifying details stripped away.</span><span class="tooltip-example"><strong>Key distinction</strong>De-identified data can sometimes be re-linked back to real people using other data sources. Synthetic data is created from scratch, so there is no original record to re-link.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/De-identification" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span> (which strips identifiers from real records), synthetic data is built entirely from scratch using <span class="term" onclick="toggleTip(this)">generative models<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Generative Models</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">AI/ML models that learn the patterns and statistical structure of a dataset, and then use what they've learned to create brand-new data that looks realistic but isn't based on any single real record. Think of it like an artist who studies thousands of portraits, then paints entirely new faces from memory.</span><span class="tooltip-example"><strong>Examples</strong>GANs, VAEs, diffusion models, and Bayesian networks are all types of generative models — each learns data patterns differently.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Generative_model" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span> trained on real datasets.
+        </p>
+        <p>
+          In a pediatric tertiary care setting like SickKids, this means we could generate realistic datasets reflecting the distributions and clinical relationships in our EHR, imaging, and genomics data — and make them available for research, AI training, and commercial licensing without ever exposing a single real patient record.
+        </p>
+        <p>
+          Generation techniques range from classical statistical methods (<span class="term" onclick="toggleTip(this)">Bayesian networks<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Bayesian Networks</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A type of statistical model that maps out how different variables depend on each other, using a diagram of connected nodes. For example, it might encode that "if a child has fever AND rash, the probability of measles is X%." It then uses these learned conditional relationships to generate new, realistic records.</span><span class="tooltip-example"><strong>Why it matters</strong>Bayesian networks are more interpretable than deep learning approaches — clinicians can actually inspect and understand the relationships the model is using, which builds trust.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Bayesian_network" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, <span class="term" onclick="toggleTip(this)">CART<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">CART</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">Classification and Regression Trees. A machine learning method that splits data into groups using a series of yes/no questions — like a decision tree. For synthetic data, CART models learn to predict each variable based on others, then use those predictions to generate new records that follow the same patterns.</span><span class="tooltip-example"><strong>Analogy</strong>Imagine a flowchart: "Is age &lt; 2? → If yes, weight is likely 5–14 kg. Is there a cardiac condition? → If yes, likely on these medications." CART builds thousands of such branching rules from your data.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Decision_tree_learning" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>) to deep learning approaches (<span class="term" onclick="toggleTip(this)">GANs<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">GANs — Generative Adversarial Networks</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A pair of competing neural networks: a <em>generator</em> tries to create fake data, and a <em>discriminator</em> tries to tell real from fake. They train against each other — the generator keeps improving until the discriminator can't tell the difference. The result: highly realistic synthetic records.</span><span class="tooltip-example"><strong>Analogy</strong>Think of a counterfeiter (generator) and a detective (discriminator). The counterfeiter keeps improving their fakes until even the detective can't spot them. The "fakes" are your synthetic patient records.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Generative_adversarial_network" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, <span class="term" onclick="toggleTip(this)">VAEs<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">VAEs — Variational Autoencoders</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A neural network that compresses data into a compact "summary" (called a latent space), then learns to reconstruct data from that summary. To generate synthetic data, you sample new points from this compressed space, and the model expands them into full, realistic records.</span><span class="tooltip-example"><strong>Analogy</strong>Imagine summarizing a patient chart into a 10-number code, then using that code to reconstruct a full chart. By tweaking the numbers slightly, you get a new, plausible chart that never existed.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Variational_autoencoder" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, <span class="term" onclick="toggleTip(this)">diffusion models<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Diffusion Models</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A generative approach that works in two phases: first, it gradually adds random noise to real data until it becomes pure static. Then, it trains a model to reverse this process — starting from noise and step-by-step removing it to produce clean, realistic data. This is the same technology behind AI image generators like DALL-E and Midjourney.</span><span class="tooltip-example"><strong>Analogy</strong>Imagine taking a photo and slowly turning up the static until it's pure snow. The model learns to reverse this — starting from TV snow and gradually recovering a realistic image. Applied to medical data, it produces realistic patient records from random noise.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Diffusion_model" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>) and increasingly, large language models. The choice of technique affects the <span class="term" onclick="toggleTip(this)">fidelity<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Data Fidelity</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">How closely the synthetic dataset reproduces the statistical properties of the original real data. High-fidelity synthetic data preserves the same distributions, correlations, and patterns as the source. Low-fidelity data might get the averages right but miss important subtleties like rare conditions or complex variable interactions.</span><span class="tooltip-example"><strong>Why it matters</strong>If your synthetic ED visit data says 40% of kids present with fever, but the real rate is 25%, any model trained on that data will make flawed predictions. Fidelity testing catches these gaps.</span><a class="tooltip-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9951365/" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, privacy guarantees, and downstream utility of the resulting dataset.
+        </p>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-title">Synthetic Data Generation Pipeline</div>
+        <div class="pipeline-steps">
+          <div class="pipeline-step">
+            <div class="step-dot teal">1</div>
+            <div class="step-info">
+              <h4>Source Data Ingestion</h4>
+              <p>Real EHR, imaging, or claims data enters a secure environment</p>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-dot teal">2</div>
+            <div class="step-info">
+              <h4>Statistical Profiling</h4>
+              <p>Distributions, correlations, and temporal patterns are extracted</p>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-dot violet">3</div>
+            <div class="step-info">
+              <h4>Generative Modeling</h4>
+              <p>GANs, VAEs, diffusion models, or Bayesian networks learn the data structure</p>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-dot violet">4</div>
+            <div class="step-info">
+              <h4>Synthetic Record Generation</h4>
+              <p>New records are created that are statistically faithful but entirely artificial</p>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-dot amber">5</div>
+            <div class="step-info">
+              <h4>Fidelity & Privacy Validation</h4>
+              <p>Utility metrics + re-identification risk assessed before release</p>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-dot amber">6</div>
+            <div class="step-info">
+              <h4>Licensing & Distribution</h4>
+              <p>Dataset packaged with documentation for commercial or research use</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generation Methods -->
+  <div class="fade-in" style="margin-top:3rem">
+    <span class="section-label">Generation Techniques</span>
+    <h3>Common Approaches to Synthetic Data Generation</h3>
+    <div class="gen-methods">
+      <div class="gen-method">
+        <div class="method-icon">🔄</div>
+        <h4>GANs</h4>
+        <p>Generative Adversarial Networks pit a generator vs. discriminator to produce realistic records</p>
+        <div class="strength">Best for: EHR tabular data, imaging</div>
+      </div>
+      <div class="gen-method">
+        <div class="method-icon">📐</div>
+        <h4>VAEs</h4>
+        <p>Variational Autoencoders learn compressed latent representations and sample new data points</p>
+        <div class="strength">Best for: Continuous variables, lab values</div>
+      </div>
+      <div class="gen-method">
+        <div class="method-icon">🌊</div>
+        <h4>Diffusion Models</h4>
+        <p>Iteratively denoise random noise into structured data, offering high fidelity output</p>
+        <div class="strength">Best for: Medical imaging, complex distributions</div>
+      </div>
+      <div class="gen-method">
+        <div class="method-icon">🌐</div>
+        <h4>Bayesian Networks</h4>
+        <p>Model conditional dependencies between variables as a directed acyclic graph</p>
+        <div class="strength">Best for: Interpretable clinical relationships</div>
+      </div>
+      <div class="gen-method">
+        <div class="method-icon">🤖</div>
+        <h4>LLMs</h4>
+        <p>Large language models generate synthetic clinical notes, discharge summaries, and narratives</p>
+        <div class="strength">Best for: Unstructured text, clinical notes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <div class="fade-in">
+    <span class="section-label">02 — Advantages</span>
+    <h2>The Case For Synthetic Data</h2>
+    <p class="section-intro">
+      Synthetic data addresses some of the most persistent bottlenecks in healthcare data access — privacy barriers, cost, regulatory overhead, and data scarcity — while enabling new revenue opportunities.
+    </p>
+  </div>
+  <div class="bc-grid">
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">🔒</span>Privacy Preservation</h3>
+      <p>Synthetic records contain no real patient information and cannot be reverse-engineered to identify individuals. Unlike de-identified data, there is no original record to re-link. This sidesteps <span class="term" onclick="toggleTip(this)">PHIPA<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">PHIPA</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The Personal Health Information Protection Act — Ontario's law governing how personal health information is collected, used, and shared. It applies to all Ontario healthcare providers and sets strict rules about consent, access, and disclosure of patient health records.</span><span class="tooltip-example"><strong>In practice</strong>PHIPA is why SickKids can't just email a researcher a spreadsheet of patient data. Every data request requires documented authority and often a formal data sharing agreement.</span><a class="tooltip-link" href="https://www.ontario.ca/laws/statute/04p03" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, <span class="term" onclick="toggleTip(this)">PIPEDA<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">PIPEDA</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">Canada's federal Personal Information Protection and Electronic Documents Act. It governs how private-sector organizations collect, use, and disclose personal information during commercial activities. It applies to cross-provincial data transfers and commercial health data activities.</span><span class="tooltip-example"><strong>Relevance</strong>If SickKids sells or licenses synthetic data commercially, PIPEDA may apply to the commercial transaction even though PHIPA governs the source health data. This dual-jurisdiction issue is an open legal question for synthetic data.</span><a class="tooltip-link" href="https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, and <span class="term" onclick="toggleTip(this)">HIPAA<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">HIPAA</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The U.S. Health Insurance Portability and Accountability Act. It sets national standards for protecting sensitive patient health information. HIPAA is relevant when sharing data with U.S.-based companies, researchers, or collaborators — which many potential buyers of SickKids synthetic data would be.</span><span class="tooltip-example"><strong>Key point</strong>Fully synthetic data is generally not considered Protected Health Information (PHI) under HIPAA because it contains no real patient data. This is a major advantage for cross-border licensing.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span> constraints, dramatically simplifying data sharing agreements.</p>
+    </div>
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">⚡</span>Accelerated Access</h3>
+      <p>Real data requests at SickKids can take months through <span class="term" onclick="toggleTip(this)">REB approvals<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">REB — Research Ethics Board</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">An institutional committee that reviews research proposals involving human subjects or their data to ensure ethical standards are met. In Canada, any study using patient data typically requires REB approval before it can begin — a process that can take weeks to months.</span><span class="tooltip-example"><strong>The bottleneck</strong>Even a simple retrospective chart review at SickKids requires REB approval. For multi-site studies, each site's REB must independently approve — multiplying the delay.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Research_ethics_committee" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>, data governance reviews, and <span class="term" onclick="toggleTip(this)">DUAs<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">DUA — Data Use Agreement</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A legal contract between the data holder (e.g., SickKids) and the data recipient that specifies exactly how data can be used, who can access it, retention timelines, and security requirements. Negotiating DUAs between institutions often takes months.</span><span class="tooltip-example"><strong>Synthetic data advantage</strong>Since synthetic data contains no real patient information, it may not require a formal DUA at all — or at minimum, a much simpler licensing agreement can replace the complex DUA process.</span></span></span>. Synthetic datasets can be provisioned in days, compressing AI development cycles from quarters to weeks. The VA deployed synthetic data across 1,300 facilities for this exact reason.</p>
+    </div>
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">💰</span>Revenue Generation</h3>
+      <p>Licensing real-world data can cost $100K–$1M+. SickKids' unique pediatric tertiary care data could be synthesized and sold at scale — to pharma, medtech, and AI companies — without ever exposing a real patient record. Pediatric data is rare and commercially valuable.</p>
+    </div>
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">📊</span>Data Augmentation</h3>
+      <p>Rare pediatric conditions produce small cohorts. Synthetic data can amplify sample sizes, enrich minority class representation, and create balanced datasets for ML training — addressing the chronic challenge of <span class="term" onclick="toggleTip(this)">statistical power<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Statistical Power</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The probability that a study will detect a real effect when one exists. Low statistical power means your dataset is too small to reliably distinguish real patterns from random noise. In pediatric research, many conditions have so few cases that studies are chronically underpowered.</span><span class="tooltip-example"><strong>Example</strong>If SickKids sees only 12 cases of a rare metabolic disorder per year, a study comparing two treatment approaches may not have enough patients to draw statistically meaningful conclusions — even if one treatment is genuinely better.</span></span></span> in pediatric research.</p>
+    </div>
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">🔧</span>Safe Development & Testing</h3>
+      <p>Software teams building clinical decision support, EHR interfaces, and ML models need realistic data to test. Synthetic datasets provide production-grade test environments without the liability of using live data — cutting development costs by 30–40%.</p>
+    </div>
+    <div class="bc-card benefit fade-in">
+      <h3><span class="h-icon">🌍</span>Cross-Border Collaboration</h3>
+      <p>Canadian health data faces strict jurisdictional controls. Synthetic data can be shared freely across international research collaborations and <span class="term" onclick="toggleTip(this)">GDPR<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">GDPR</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The EU's General Data Protection Regulation — one of the world's strictest data privacy laws. It governs how personal data of EU residents is collected, stored, and transferred. Cross-border transfers of personal data to non-EU countries (like Canada) require special legal mechanisms.</span><span class="tooltip-example"><strong>Synthetic data angle</strong>The European Data Protection Supervisor has noted that truly synthetic data may fall outside GDPR's scope since it doesn't relate to identifiable individuals — but this is still debated, especially for high-fidelity datasets.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/General_Data_Protection_Regulation" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>/HIPAA-governed jurisdictions without triggering cross-border data transfer restrictions.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CHALLENGES -->
+<section id="challenges">
+  <div class="fade-in">
+    <span class="section-label">03 — Risks & Limitations</span>
+    <h2>The Challenges We Must Address</h2>
+    <p class="section-intro">
+      Synthetic data is not a silver bullet. Serious technical, ethical, and regulatory challenges must be mitigated before SickKids pursues commercialization.
+    </p>
+  </div>
+  <div class="bc-grid">
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">⚠️</span>Fidelity & <span class="term" onclick="toggleTip(this)">Distribution Drift<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Distribution Drift</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When the statistical patterns in synthetic data gradually deviate from the real source data. This can happen during generation (the model subtly shifts averages, smooths out extremes, or alters relationships between variables) or over time (the real patient population changes but the synthetic dataset remains static).</span><span class="tooltip-example"><strong>Pediatric example</strong>If real SickKids data shows that 3% of asthma patients have a rare comorbidity, but the synthetic generator "drifts" this to 1.5%, any downstream research on that subgroup will underestimate its prevalence by half.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Dataset_shift" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
+      <p>Synthetic generators can subtly distort correlations, flatten <span class="term" onclick="toggleTip(this)">rare signals<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Rare Signal Loss</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When a generative model fails to reproduce uncommon but clinically important patterns in the data. Models tend to learn the most common patterns well, but may smooth over or completely miss rare events — like unusual drug reactions, atypical presentations, or low-frequency diagnoses.</span><span class="tooltip-example"><strong>Why this matters in pediatrics</strong>A rare metabolic condition affecting 0.1% of SickKids patients might be absent entirely from the synthetic data because the generator didn't have enough examples to learn the pattern. Anyone using that synthetic data would have a blind spot for that condition.</span></span></span>, and introduce artifacts. In pediatrics — where rare diseases and edge cases are clinically critical — even small fidelity losses can produce misleading downstream analyses.</p>
+    </div>
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">🔓</span><span class="term" onclick="toggleTip(this)">Re-Identification Risk<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Re-Identification Risk</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The possibility that someone could use a synthetic dataset — even though it contains no real identifiers — to infer or determine the identity of a real individual whose data was used in training. This is especially concerning when the original dataset contains rare or unique combinations of attributes.</span><span class="tooltip-example"><strong>Pediatric risk</strong>Imagine a synthetic record for a 7-year-old with a rare cardiac condition, a specific surgical history, and an uncommon ethnic background at a Toronto hospital. Even without a name, that combination might uniquely identify a real child.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Data_re-identification" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
+      <p>High-fidelity synthetic data trained on small populations (e.g., rare pediatric conditions) can still leak information about real individuals. There are no standardized, objective methods to certify that a synthetic dataset is sufficiently different from the original.</p>
+    </div>
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">⚖️</span>Regulatory Grey Zone</h3>
+      <p>No Canadian or international regulator has definitively ruled on the legal status of synthetic data. It exists in a gap between PHIPA/PIPEDA's definitions. Ethics boards are inconsistently waiving review for synthetic data research — a loophole that could tighten.</p>
+    </div>
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">🧬</span><span class="term" onclick="toggleTip(this)">Bias Amplification<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Bias Amplification</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When a generative model not only reproduces existing biases in the training data, but actually makes them worse. If certain populations are underrepresented in the source data, the synthetic generator may further reduce their representation — or learn incorrect patterns about them due to having too few examples.</span><span class="tooltip-example"><strong>How it happens</strong>If only 2% of SickKids' source data represents Indigenous children (vs. ~8% of Ontario's child population), a GAN might learn that "typical" patients don't look like Indigenous children. The synthetic data then underrepresents them even further — and any AI models trained on it will perform worse for that group.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Algorithmic_bias" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
+      <p>If real SickKids data contains demographic under-representation (e.g., Indigenous populations, rural communities), synthetic generation can amplify these biases. Models trained on biased synthetic data may perpetuate <span class="term" onclick="toggleTip(this)">health inequities<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Health Inequities</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">Systematic, avoidable, and unfair differences in health outcomes between population groups. Unlike simple health "differences," inequities are rooted in social, economic, and structural factors — and are considered unjust. Using biased data to train clinical tools risks encoding these inequities into automated systems.</span><span class="tooltip-example"><strong>The concern</strong>If an AI diagnostic tool is trained on synthetic data that underrepresents certain ethnic groups, it may perform less accurately for those groups — effectively providing worse care to populations that already face barriers to healthcare access.</span></span></span> at scale.</p>
+    </div>
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">🏥</span>Clinician Distrust</h3>
+      <p>Healthcare practitioners are risk-averse and often skeptical of AI-derived insights. Clinical decisions informed by models trained on "fake" data face significant adoption barriers — particularly in high-stakes pediatric contexts.</p>
+    </div>
+    <div class="bc-card challenge fade-in">
+      <h3><span class="h-icon">📜</span>Consent & Governance</h3>
+      <p>Patients consented to SickKids using their data for care and research — not necessarily for training commercial generative models. The ethical ground for monetizing derivatives of patient data requires careful institutional governance and potentially new consent frameworks.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- ANALYSIS / CHARTS -->
+<section id="analysis">
+  <div class="fade-in">
+    <span class="section-label">04 — Data & Analysis</span>
+    <h2>Quantifying the Landscape</h2>
+    <p class="section-intro">
+      Key metrics and tradeoffs that frame the synthetic data opportunity for a pediatric institution.
+    </p>
+  </div>
+
+  <div class="charts-grid fade-in">
+    <!-- Bar chart: Cost comparison -->
+    <div class="chart-box">
+      <h4>Data Access Cost Comparison (USD)</h4>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <span class="bar-label">Clinical trial (per patient)</span>
+          <div class="bar-track"><div class="bar-fill coral" data-width="100%"></div></div>
+          <span class="bar-value">$20K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">RWD licensing</span>
+          <div class="bar-track"><div class="bar-fill amber" data-width="75%"></div></div>
+          <span class="bar-value">$100K+</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">De-identification</span>
+          <div class="bar-track"><div class="bar-fill violet" data-width="30%"></div></div>
+          <span class="bar-value">$50K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Synthetic generation</span>
+          <div class="bar-track"><div class="bar-fill teal" data-width="10%"></div></div>
+          <span class="bar-value">$5–15K</span>
+        </div>
+      </div>
+      <div class="chart-source">
+        <strong>Sources</strong><br>
+        Clinical trial per-patient costs: <a href="https://www.palleos.com/resource-library/blog/why-clinical-trials-are-so-expensive/" target="_blank">Palleos Healthcare (2025)</a> &amp; <a href="https://www.abacum.ai/blog/clinical-trial-costing" target="_blank">Abacum</a> — range $15K–$136K by phase. RWD licensing &amp; synthetic cost comparison: <a href="https://hospitalogy.com/articles/2023-11-02/synthetic-data-in-healthcare-great-data-unlock/" target="_blank">Hospitalogy (2024)</a>. De-identification costs are estimated from industry benchmarks.
+      </div>
+    </div>
+
+    <!-- Donut chart: Use cases -->
+    <div class="chart-box">
+      <h4>Synthetic Data Use Cases in Healthcare Literature</h4>
+      <div class="donut-container">
+        <svg class="donut-svg" viewBox="0 0 200 200">
+          <!-- AI/ML Training 30% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#00c9a7" stroke-width="28"
+            stroke-dasharray="131.95 308.88" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <!-- Privacy-Preserving Research 25% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#845ef7" stroke-width="28"
+            stroke-dasharray="109.96 330.87" stroke-dashoffset="-131.95" transform="rotate(-90 100 100)"/>
+          <!-- Software Testing 20% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#ffc75f" stroke-width="28"
+            stroke-dasharray="87.96 352.87" stroke-dashoffset="-241.91" transform="rotate(-90 100 100)"/>
+          <!-- Education 15% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#ff6b6b" stroke-width="28"
+            stroke-dasharray="65.97 374.86" stroke-dashoffset="-329.87" transform="rotate(-90 100 100)"/>
+          <!-- Other 10% -->
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#5a7194" stroke-width="28"
+            stroke-dasharray="43.98 396.85" stroke-dashoffset="-395.84" transform="rotate(-90 100 100)"/>
+          <!-- Center -->
+          <circle cx="100" cy="100" r="56" fill="#111d33"/>
+          <text x="100" y="95" text-anchor="middle" fill="#f6f8fc" font-family="IBM Plex Sans" font-weight="700" font-size="18">7</text>
+          <text x="100" y="114" text-anchor="middle" fill="#8fa3c0" font-family="IBM Plex Sans" font-size="9" font-weight="300">use cases</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#00c9a7"></div>
+            <div class="legend-text"><strong>30% — AI/ML Training</strong>Model development & validation</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#845ef7"></div>
+            <div class="legend-text"><strong>25% — Research</strong>Privacy-preserving analytics</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#ffc75f"></div>
+            <div class="legend-text"><strong>20% — Software Testing</strong>EHR/device development</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#ff6b6b"></div>
+            <div class="legend-text"><strong>15% — Education</strong>Training & simulation</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#5a7194"></div>
+            <div class="legend-text"><strong>10% — Other</strong>Policy, epidemiology, linking</div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-source">
+        <strong>Sources</strong><br>
+        Seven use cases identified from 72 articles: <a href="https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000082" target="_blank">Gonzales et al., PLOS Digital Health (2023)</a>. Percentage weightings are approximate, based on relative emphasis across the literature including <a href="https://www.nature.com/articles/s41746-023-00927-3" target="_blank">Giuffrè &amp; Shung, npj Digital Medicine (2023)</a> and <a href="https://www.sciencedirect.com/science/article/pii/S2666521225001474" target="_blank">Rahman et al., Intell.-Based Med. (2026)</a>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy-Utility Tradeoff -->
+  <div class="chart-box fade-in" style="margin-top:2rem">
+    <h4>The Privacy–Utility Tradeoff</h4>
+    <p style="text-align:center; font-size:0.82rem; color:var(--steel); margin-bottom:1.5rem; font-weight:300;">
+      Higher fidelity increases research utility but also raises the risk of re-identifying real individuals. Finding the right balance is the central challenge.
+    </p>
+    <div class="tradeoff-scenarios">
+      <div class="tradeoff-scenario">
+        <h5>🛡️ Maximum Privacy</h5>
+        <div class="tradeoff-meters">
+          <div class="meter-row">
+            <span class="meter-label priv">Privacy</span>
+            <div class="meter-track"><div class="meter-fill priv" style="width:95%"></div></div>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label util">Utility</span>
+            <div class="meter-track"><div class="meter-fill util" style="width:25%"></div></div>
+          </div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Noise + <span class="term" onclick="toggleTip(this)">differential privacy<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Differential Privacy</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A mathematical framework that guarantees an individual's data cannot significantly influence the output of a query or model. It works by adding carefully calibrated random noise to data or results. The key parameter epsilon (ε) controls the tradeoff: lower ε = more privacy but noisier results.</span><span class="tooltip-example"><strong>In practice</strong>Apple and Google use differential privacy to collect usage statistics from millions of devices without learning anything about individual users. In synthetic data, it adds a formal, provable privacy guarantee on top of the generation process.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Differential_privacy" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>. Safe but limited analytical value.</p>
+      </div>
+      <div class="tradeoff-scenario" style="border-color:rgba(0,201,167,0.3)">
+        <h5>⚖️ Optimal Balance</h5>
+        <div class="tradeoff-meters">
+          <div class="meter-row">
+            <span class="meter-label priv">Privacy</span>
+            <div class="meter-track"><div class="meter-fill priv" style="width:70%"></div></div>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label util">Utility</span>
+            <div class="meter-track"><div class="meter-fill util" style="width:75%"></div></div>
+          </div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Validated synthetic generation with disclosure testing. <strong style="color:var(--teal)">Recommended target.</strong></p>
+      </div>
+      <div class="tradeoff-scenario">
+        <h5>🔬 Maximum Utility</h5>
+        <div class="tradeoff-meters">
+          <div class="meter-row">
+            <span class="meter-label priv">Privacy</span>
+            <div class="meter-track"><div class="meter-fill priv" style="width:30%"></div></div>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label util">Utility</span>
+            <div class="meter-track"><div class="meter-fill util" style="width:95%"></div></div>
+          </div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Near-replica fidelity. High risk for rare conditions and small cohorts.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fidelity Spectrum -->
+  <div class="chart-box fade-in" style="margin-top:2rem">
+    <h4>Fidelity Spectrum & Pediatric Risk</h4>
+    <div class="fidelity-spectrum">
+      <div class="spectrum-labels">
+        <span class="spectrum-label">Low Fidelity</span>
+        <span class="spectrum-label" style="color:var(--amber)">Moderate</span>
+        <span class="spectrum-label" style="color:var(--teal)">High Fidelity</span>
+      </div>
+      <div class="spectrum-track"></div>
+      <div class="spectrum-markers">
+        <div class="spectrum-marker">
+          <div class="emoji">🧪</div>
+          <strong>Random / Noise</strong>
+          <p>Good for software testing.<br>Poor for research.</p>
+        </div>
+        <div class="spectrum-marker">
+          <div class="emoji">📊</div>
+          <strong>Statistical Replica</strong>
+          <p>Preserves distributions.<br>May lose rare signals.</p>
+        </div>
+        <div class="spectrum-marker">
+          <div class="emoji">🎯</div>
+          <strong>Deep Generative</strong>
+          <p>Preserves correlations.<br>Higher re-ID risk for rare conditions.</p>
+        </div>
+        <div class="spectrum-marker">
+          <div class="emoji">⚠️</div>
+          <strong>Near-Replica</strong>
+          <p>Maximum utility.<br>Unacceptable for pediatric data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- SUITABILITY BY CONDITION -->
+<section id="suitability">
+  <div class="fade-in">
+    <span class="section-label">05 — Suitability by Data Type</span>
+    <h2>Not All Data Is Created Equal</h2>
+    <p class="section-intro">
+      The viability of synthetic data generation depends heavily on the underlying condition — specifically, how common it is, how large the source cohort is, and how clinically complex the variable relationships are. Here's how different types of SickKids data map to synthetic data suitability.
+    </p>
+  </div>
+
+  <div class="suit-grid">
+
+    <!-- HIGH VOLUME: Common ED presentations -->
+    <div class="suit-panel fade-in">
+      <div>
+        <div class="suit-header">
+          <span class="suit-badge high">● High Suitability</span>
+        </div>
+        <div class="suit-title">High-Volume Common Presentations</div>
+        <div class="suit-conditions">
+          <span class="suit-tag">Asthma</span>
+          <span class="suit-tag">Bronchiolitis</span>
+          <span class="suit-tag">Gastroenteritis</span>
+          <span class="suit-tag">Febrile Seizures</span>
+          <span class="suit-tag">Fractures</span>
+          <span class="suit-tag">Croup</span>
+          <span class="suit-tag">UTI</span>
+        </div>
+        <div class="suit-body">
+          Large sample sizes (thousands of encounters/year) give generative models abundant training data. Statistical distributions are well-represented, correlations between variables are robust, and rare edge cases within these cohorts are still numerous enough to capture. Synthetic versions of these datasets will closely mirror the real data.
+        </div>
+        <div class="suit-callout green">
+          <strong>Recommendation:</strong> Ideal starting point for a pilot program. High fidelity, low re-identification risk, and strong commercial demand from AI companies training pediatric triage and clinical decision support models.
+        </div>
+      </div>
+      <div class="suit-meters">
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label fidelity">Expected Fidelity</span>
+            <span class="suit-meter-value">Very High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill fidelity" style="width:92%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label privacy">Privacy Safety</span>
+            <span class="suit-meter-value">Very High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill privacy" style="width:90%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label volume">Source Data Volume</span>
+            <span class="suit-meter-value">1,000s/yr</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill volume" style="width:95%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label commercial">Commercial Value</span>
+            <span class="suit-meter-value">High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill commercial" style="width:80%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODERATE: Subspecialty conditions with decent volume -->
+    <div class="suit-panel fade-in">
+      <div>
+        <div class="suit-header">
+          <span class="suit-badge moderate">● Moderate Suitability</span>
+        </div>
+        <div class="suit-title">Subspecialty Conditions — Moderate Volume</div>
+        <div class="suit-conditions">
+          <span class="suit-tag">Sepsis</span>
+          <span class="suit-tag">DKA</span>
+          <span class="suit-tag">Epilepsy</span>
+          <span class="suit-tag">Appendicitis</span>
+          <span class="suit-tag">Pneumonia (complex)</span>
+          <span class="suit-tag">Concussion</span>
+          <span class="suit-tag">Sickle Cell Crises</span>
+        </div>
+        <div class="suit-body">
+          Moderate cohort sizes (hundreds of encounters/year) provide adequate training data for most generative approaches, though some rare subtypes within these conditions may be underrepresented. Variable interactions are more complex — sepsis presentations, for example, involve intricate relationships between vitals, lab trends, and interventions that generators must faithfully reproduce.
+        </div>
+        <div class="suit-callout amber">
+          <strong>Key tradeoff:</strong> Synthetic data will capture the central tendencies well, but may smooth over atypical presentations (e.g., sepsis without fever, DKA in non-diabetics). Validation against the tails of the distribution is critical before commercial release.
+        </div>
+      </div>
+      <div class="suit-meters">
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label fidelity">Expected Fidelity</span>
+            <span class="suit-meter-value">Good</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill fidelity" style="width:72%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label privacy">Privacy Safety</span>
+            <span class="suit-meter-value">Good</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill privacy" style="width:75%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label volume">Source Data Volume</span>
+            <span class="suit-meter-value">100s/yr</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill volume" style="width:55%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label commercial">Commercial Value</span>
+            <span class="suit-meter-value">High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill commercial" style="width:85%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOW/COMPLEX: Rare conditions -->
+    <div class="suit-panel fade-in">
+      <div>
+        <div class="suit-header">
+          <span class="suit-badge low">● Low Suitability — High Value Tension</span>
+        </div>
+        <div class="suit-title">Rare &amp; Ultra-Rare Conditions</div>
+        <div class="suit-conditions">
+          <span class="suit-tag">Inborn Errors of Metabolism</span>
+          <span class="suit-tag">Rare Cardiac Defects</span>
+          <span class="suit-tag">Pediatric Stroke</span>
+          <span class="suit-tag">Mitochondrial Disease</span>
+          <span class="suit-tag">Rare Cancers</span>
+          <span class="suit-tag">Genetic Epilepsies</span>
+        </div>
+        <div class="suit-body">
+          This is the central paradox: rare disease data is the most commercially valuable (pharma companies will pay a premium for pediatric rare disease cohorts) but the hardest to synthesize safely. With only dozens of cases per year — sometimes single digits — generative models don't have enough examples to learn robust statistical patterns. The resulting synthetic data may either fail to capture the condition accurately, or reproduce records so close to the originals that re-identification becomes a real risk.
+        </div>
+        <div class="suit-callout red">
+          <strong>Critical risk:</strong> A synthetic record describing a 4-year-old with a specific mitochondrial variant, particular lab values, and a surgical history at a Toronto children's hospital could plausibly identify a real child — even without a name attached. Extra privacy safeguards (differential privacy, k-anonymity checks, suppression of rare attribute combinations) are essential.
+        </div>
+      </div>
+      <div class="suit-meters">
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label fidelity">Expected Fidelity</span>
+            <span class="suit-meter-value">Low–Variable</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill fidelity" style="width:30%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label privacy">Privacy Safety</span>
+            <span class="suit-meter-value">Low</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill privacy" style="width:25%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label volume">Source Data Volume</span>
+            <span class="suit-meter-value">&lt;50/yr</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill volume" style="width:12%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label commercial">Commercial Value</span>
+            <span class="suit-meter-value">Very High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill commercial" style="width:95%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPECIAL CASE: Longitudinal / multi-modal -->
+    <div class="suit-panel fade-in">
+      <div>
+        <div class="suit-header">
+          <span class="suit-badge caution">● Special Considerations</span>
+        </div>
+        <div class="suit-title">Longitudinal &amp; Multi-Modal Data</div>
+        <div class="suit-conditions">
+          <span class="suit-tag">Chronic Disease Trajectories</span>
+          <span class="suit-tag">Imaging + EHR Paired Data</span>
+          <span class="suit-tag">Genomics + Phenotype</span>
+          <span class="suit-tag">NICU Longitudinal Records</span>
+          <span class="suit-tag">Post-Surgical Follow-Up</span>
+        </div>
+        <div class="suit-body">
+          Synthesizing data that preserves temporal relationships (how a patient's condition evolves over visits) and cross-modal correlations (linking an X-ray finding to a lab value to a medication change) is significantly harder than generating single-encounter tabular data. Most current commercial tools handle tabular snapshots well but struggle with longitudinal coherence and multi-modal alignment.
+        </div>
+        <div class="suit-callout amber">
+          <strong>Practical implication:</strong> A synthetic NICU stay that generates realistic day-by-day vital signs, medication adjustments, and imaging findings in a clinically coherent sequence is at the frontier of current capabilities. Consider starting with single-encounter data and building toward longitudinal datasets as generative techniques mature.
+        </div>
+      </div>
+      <div class="suit-meters">
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label fidelity">Expected Fidelity</span>
+            <span class="suit-meter-value">Emerging</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill fidelity" style="width:40%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label privacy">Privacy Safety</span>
+            <span class="suit-meter-value">Variable</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill privacy" style="width:50%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label volume">Source Data Volume</span>
+            <span class="suit-meter-value">Varies</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill volume" style="width:45%"></div></div>
+        </div>
+        <div class="suit-meter">
+          <div class="suit-meter-header">
+            <span class="suit-meter-label commercial">Commercial Value</span>
+            <span class="suit-meter-value">Very High</span>
+          </div>
+          <div class="suit-meter-track"><div class="suit-meter-fill commercial" style="width:90%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- COMMERCIAL VIABILITY -->
+<section id="commercial">
+  <div class="fade-in">
+    <span class="section-label">06 — Commercial Assessment</span>
+    <h2>Commercialization Viability for SickKids</h2>
+    <p class="section-intro">
+      The unique value of SickKids' pediatric data — rare conditions, longitudinal records, and a world-renowned brand — creates a compelling commercial opportunity, with important caveats.
+    </p>
+  </div>
+
+  <div class="comm-grid fade-in">
+    <div class="comm-card">
+      <h4>Competitive Advantages</h4>
+      <ul class="comm-list">
+        <li><span class="dot green"></span>Pediatric data is scarce globally — pharma and AI companies struggle to find it</li>
+        <li><span class="dot green"></span>SickKids brand carries trust and academic credibility with buyers</li>
+        <li><span class="dot green"></span>Rare disease cohorts (oncology, metabolic, cardiac) are uniquely valuable for drug development</li>
+        <li><span class="dot green"></span><span class="term" onclick="toggleTip(this)">FHIR<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">FHIR — Fast Healthcare Interoperability Resources</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A modern standard for exchanging healthcare information electronically. Developed by HL7, FHIR uses a web-based API approach (like apps on your phone talking to servers) to make health data easy to access and share between systems. It's becoming the dominant standard in healthcare IT.</span><span class="tooltip-example"><strong>Commercial value</strong>If SickKids' synthetic data is formatted in FHIR, buyers can plug it directly into their development environments, EHR test systems, and AI training pipelines without costly data transformation — making the product much more attractive.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Fast_Healthcare_Interoperability_Resources" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>-compatible output enables seamless integration with buyer systems</li>
+        <li><span class="dot green"></span>Revenue diversification beyond traditional research grants and government funding</li>
+      </ul>
+    </div>
+    <div class="comm-card">
+      <h4>Critical Risk Factors</h4>
+      <ul class="comm-list">
+        <li><span class="dot red"></span>Public perception: parents may object to monetization of children's health data derivatives</li>
+        <li><span class="dot red"></span>Consent frameworks were not designed for commercial synthetic data generation</li>
+        <li><span class="dot amber"></span>Insurance companies could use synthetic data to discriminate against pediatric populations</li>
+        <li><span class="dot amber"></span>Regulatory landscape may shift — what's permissible today could be restricted tomorrow</li>
+        <li><span class="dot amber"></span>Requires significant upfront investment in generation infrastructure and validation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Vendor Comparison -->
+  <div class="fade-in" style="margin-top:3rem">
+    <span class="section-label">Vendor Landscape</span>
+    <h3>Tools & Platforms for Synthetic Data Generation</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tool / Vendor</th>
+            <th>Type</th>
+            <th>Approach</th>
+            <th>Healthcare Focus</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Synthea™</strong></td>
+            <td><span class="tag open">Open Source</span></td>
+            <td>Rules-based, statistical</td>
+            <td>FHIR-native patient records</td>
+            <td>ONC-supported; includes pediatric modules</td>
+          </tr>
+          <tr>
+            <td><strong>MDClone</strong></td>
+            <td><span class="tag commercial">Commercial</span></td>
+            <td>Statistical engine</td>
+            <td>EHR-to-synthetic conversion</td>
+            <td>Used by major health systems & universities</td>
+          </tr>
+          <tr>
+            <td><strong>Syntegra</strong></td>
+            <td><span class="tag commercial">Commercial</span></td>
+            <td>Deep generative (GANs)</td>
+            <td>Health data synthesis</td>
+            <td>Privacy guarantees with statistical validation</td>
+          </tr>
+          <tr>
+            <td><strong>Mostly AI</strong></td>
+            <td><span class="tag commercial">Commercial</span></td>
+            <td>Deep generative</td>
+            <td>Tabular data, multi-industry</td>
+            <td>Strong privacy metrics; GDPR-focused</td>
+          </tr>
+          <tr>
+            <td><strong>Replica Analytics</strong></td>
+            <td><span class="tag commercial">Commercial</span></td>
+            <td>Bayesian networks</td>
+            <td>Healthcare & government</td>
+            <td>Canadian company; PHIPA/PIPEDA aware</td>
+          </tr>
+          <tr>
+            <td><strong>Gretel.ai</strong></td>
+            <td><span class="tag commercial">Commercial</span></td>
+            <td>Multiple (GAN, LLM)</td>
+            <td>Multi-industry</td>
+            <td>API-first; composable generation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pediatric-Specific Callout -->
+  <div class="callout fade-in">
+    <h3>The Pediatric Data Premium</h3>
+    <p>
+      Pediatric clinical data occupies a uniquely valuable niche in the healthcare data market. Children's hospitals represent a tiny fraction of all healthcare facilities, yet their data is essential for drug dosing research, developmental biology, rare disease modeling, and pediatric AI applications.
+    </p>
+    <p>
+      SickKids sees some of the rarest pediatric conditions in North America. A synthetic dataset preserving the statistical signatures of SickKids' metabolic, cardiac, oncological, and neurological cohorts — without any real patient data — would be extremely attractive to pharma companies running pediatric clinical trials, medtech companies developing pediatric devices, and AI companies building pediatric diagnostic models.
+    </p>
+    <p>
+      However, the same rarity that makes this data valuable also makes it more vulnerable to re-identification. A synthetic record describing a patient with a one-in-a-million condition in a specific age bracket, even without identifiers, could theoretically be linked back to a real child. This is the central tension SickKids must navigate.
+    </p>
+  </div>
+
+  <!-- Bittensor link callout -->
+  <div class="callout fade-in" style="border-color: rgba(132,94,247,0.25); background: linear-gradient(135deg, rgba(132,94,247,0.06), rgba(132,94,247,0.02));">
+    <h3 style="color: var(--violet-light);">Exploring Decentralized AI: Bittensor</h3>
+    <p>
+      Could SickKids use <strong>Bittensor</strong> — a decentralized AI network — to generate synthetic data and earn revenue through cryptocurrency emissions? We've prepared a dedicated deep-dive assessing the feasibility, workflow, risks, and honest verdict on this emerging approach.
+    </p>
+    <a href="bittensor.html" style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.7rem 1.5rem; background:rgba(132,94,247,0.12); border:1px solid rgba(132,94,247,0.3); border-radius:100px; color:var(--violet-light); text-decoration:none; font-weight:600; font-size:0.85rem; margin-top:0.5rem; transition: all 0.3s;">
+      Read the Bittensor Assessment ↗
+    </a>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<section id="roadmap">
+  <div class="fade-in">
+    <span class="section-label">07 — Recommended Path Forward</span>
+    <h2>Strategic Roadmap</h2>
+    <p class="section-intro">
+      A phased approach to developing SickKids' synthetic data capability — balancing innovation speed with the governance rigor expected of a world-class pediatric institution.
+    </p>
+  </div>
+  <div class="rec-steps">
+    <div class="rec-step fade-in">
+      <h4>Governance First</h4>
+      <p>Establish a synthetic data governance committee spanning clinical, legal, ethics, IT, and research. Define consent frameworks, acceptable use policies, and a disclosure risk threshold before generating any dataset.</p>
+    </div>
+    <div class="rec-step fade-in">
+      <h4>Pilot with Low-Risk Data</h4>
+      <p>Begin with high-volume, low-sensitivity data (e.g., ED visit demographics, triage acuity patterns) before progressing to rare-disease cohorts. Validate fidelity metrics against real data in a controlled research setting.</p>
+    </div>
+    <div class="rec-step fade-in">
+      <h4>Benchmark Disclosure Risk</h4>
+      <p>Implement formal re-identification testing (<span class="term" onclick="toggleTip(this)">nearest-neighbor distance<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Nearest-Neighbor Distance</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A privacy metric that measures how close each synthetic record is to the nearest real record in the original dataset. If a synthetic record is very close to a real one, it might effectively be a copy — which means it could reveal real patient information. Larger minimum distances = better privacy.</span><span class="tooltip-example"><strong>How it's used</strong>After generating synthetic data, you compare every synthetic record against every real record and measure the "distance" (difference across all variables). If any synthetic record is suspiciously close to a real one, it gets flagged or removed.</span></span></span>, <span class="term" onclick="toggleTip(this)">membership inference attacks<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Membership Inference Attacks</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A type of privacy attack where someone tries to determine whether a specific individual's data was used to train the generative model. If an attacker has a person's medical record, they test whether the synthetic data "knows" about that person by looking for telltale statistical fingerprints.</span><span class="tooltip-example"><strong>Why test for this</strong>Even if no record in the synthetic data directly matches a real patient, the model's learned patterns might reveal that a specific person was in the training set — which is itself a privacy breach. Testing against these attacks is considered best practice.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Membership_inference_attack" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>) and establish a quantitative privacy threshold. Pediatric rare conditions require stricter thresholds than adult general populations.</p>
+    </div>
+    <div class="rec-step fade-in">
+      <h4>Select Vendor or Build</h4>
+      <p>Evaluate commercial vendors (MDClone, Syntegra, Replica Analytics) against in-house capability. Consider a Canadian vendor (Replica Analytics) for PHIPA/PIPEDA alignment. Factor in long-term costs vs. per-dataset licensing.</p>
+    </div>
+    <div class="rec-step fade-in">
+      <h4>Tiered Licensing Model</h4>
+      <p>Design a commercial licensing framework with tiers: academic (low-cost), pharma R&D (premium), and AI training (usage-based). Include contractual restrictions on downstream use, especially re-identification attempts and insurance applications.</p>
+    </div>
+    <div class="rec-step fade-in">
+      <h4>Ongoing Validation Loop</h4>
+      <p>Synthetic datasets degrade as real data distributions shift over time. Establish a quarterly validation cycle comparing synthetic output fidelity against updated source data, and version all released datasets with full audit trails.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Prepared for SickKids Strategic Leadership — March 2026</p>
+  <p style="margin-top:0.5rem">
+    Sources include <a href="https://www.nature.com/articles/s41746-023-00927-3" target="_blank">npj Digital Medicine</a>,
+    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9931305/" target="_blank">PLOS Digital Health</a>,
+    <a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(22)00232-X/fulltext" target="_blank">The Lancet</a>,
+    <a href="https://www.nature.com/articles/d41586-025-02869-0" target="_blank">Nature (2025)</a>, and
+    <a href="https://www.sciencedirect.com/science/article/pii/S2666521225001474" target="_blank">Intell.-Based Med. (2026)</a>
+  </p>
+</footer>
+
+<script>
+// Intersection Observer for fade-in animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Animate bar fills on scroll
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width;
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.bar-chart').forEach(el => barObserver.observe(el));
+
+// Smooth nav scroll
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Nav background on scroll
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 100) {
+    nav.style.background = 'rgba(10, 22, 40, 0.95)';
+  } else {
+    nav.style.background = 'rgba(10, 22, 40, 0.85)';
+  }
+});
+
+// ─── TOOLTIP SYSTEM ───
+// Extract all tooltip panels from inline DOM to body to avoid p > block nesting issues
+const tooltipMap = new Map();
+let tipIdCounter = 0;
+
+document.querySelectorAll('.term').forEach(term => {
+  const panel = term.querySelector('.tooltip-panel');
+  if (!panel) return;
+
+  const id = 'tip-' + (tipIdCounter++);
+  term.dataset.tipId = id;
+
+  // Move panel to body
+  document.body.appendChild(panel);
+  panel.id = id;
+
+  // Add arrow
+  const arrow = document.createElement('div');
+  arrow.className = 'tooltip-arrow';
+  panel.appendChild(arrow);
+
+  tooltipMap.set(id, { term, panel });
+});
+
+function closeTips() {
+  tooltipMap.forEach(({ panel }) => {
+    panel.classList.remove('show', 'flip-y');
+    panel.style.top = '';
+    panel.style.left = '';
+  });
+}
+
+function toggleTip(termEl) {
+  const id = termEl.dataset.tipId;
+  if (!id) return;
+  const entry = tooltipMap.get(id);
+  if (!entry) return;
+
+  const { panel } = entry;
+  const wasOpen = panel.classList.contains('show');
+
+  closeTips();
+
+  if (!wasOpen) {
+    panel.style.visibility = 'hidden';
+    panel.classList.add('show');
+
+    requestAnimationFrame(() => {
+      const termRect = termEl.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const arrow = panel.querySelector('.tooltip-arrow');
+      const gap = 14;
+      const vw = window.innerWidth;
+
+      // Default: above the term, centered
+      let top = termRect.top - panelRect.height - gap + window.scrollY;
+      let left = termRect.left + (termRect.width / 2) - (panelRect.width / 2);
+      let flipped = false;
+
+      // If not enough room above (in viewport coords), flip below
+      if (termRect.top - panelRect.height - gap < 70) {
+        top = termRect.bottom + gap + window.scrollY;
+        flipped = true;
+      }
+
+      // Clamp horizontally
+      if (left < 12) left = 12;
+      if (left + panelRect.width > vw - 12) left = vw - panelRect.width - 12;
+
+      // Position the arrow to point at the term center
+      const termCenterX = termRect.left + termRect.width / 2;
+      let arrowLeft = termCenterX - left;
+      arrowLeft = Math.max(20, Math.min(arrowLeft, panelRect.width - 20));
+
+      // Use absolute positioning relative to document (not viewport)
+      panel.style.position = 'absolute';
+      panel.style.top = top + 'px';
+      panel.style.left = left + 'px';
+      panel.classList.toggle('flip-y', flipped);
+
+      if (arrow) {
+        arrow.style.left = arrowLeft + 'px';
+        arrow.style.transform = 'translateX(-50%) rotate(45deg)';
+      }
+
+      panel.style.visibility = '';
+    });
+  }
+}
+
+// Close tooltips when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.term') && !e.target.closest('.tooltip-panel')) {
+    closeTips();
+  }
+});
+
+// Close on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeTips();
+});
+
+// Close on scroll/resize
+let scrollTimer;
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(closeTips, 150);
+}, { passive: true });
+window.addEventListener('resize', closeTips);
+</script>
+
+</body>
+</html>
