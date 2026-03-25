@@ -1033,10 +1033,62 @@
     color: var(--white);
   }
 
+  .safeguard-defs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .safeguard-def {
+    display: flex;
+    gap: 1rem;
+    background: rgba(90,113,148,0.06);
+    border: 1px solid rgba(90,113,148,0.1);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 1.4rem;
+  }
+
+  .safeguard-icon {
+    font-size: 1.4rem;
+    min-width: 32px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .safeguard-def h5 {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+
+  .safeguard-def p {
+    font-size: 0.84rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+  }
+
+  .safeguard-def p:last-child { margin-bottom: 0; }
+
+  .safeguard-def p strong { color: var(--white); font-weight: 500; }
+
+  .safeguard-applied {
+    margin-top: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(0,201,167,0.04);
+    border-left: 3px solid var(--teal-dark);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+    font-size: 0.8rem !important;
+    color: var(--ice) !important;
+  }
+
   @media (max-width: 900px) {
-    .suit-panel {
-      grid-template-columns: 1fr;
-    }
+    .safeguard-def { flex-direction: column; gap: 0.5rem; }
+    .safeguard-icon { min-width: auto; text-align: left; }
   }
 
   /* ─── FOOTER ─── */
@@ -2008,7 +2060,33 @@
           This is the central paradox: rare disease data is the most commercially valuable (pharma companies will pay a premium for pediatric rare disease cohorts) but the hardest to synthesize safely. With only dozens of cases per year — sometimes single digits — generative models don't have enough examples to learn robust statistical patterns. The resulting synthetic data may either fail to capture the condition accurately, or reproduce records so close to the originals that re-identification becomes a real risk.
         </div>
         <div class="suit-callout red">
-          <strong>Critical risk:</strong> A synthetic record describing a 4-year-old with a specific mitochondrial variant, particular lab values, and a surgical history at a Toronto children's hospital could plausibly identify a real child — even without a name attached. Extra privacy safeguards (differential privacy, k-anonymity checks, suppression of rare attribute combinations) are essential.
+          <strong>Critical risk:</strong> A synthetic record describing a 4-year-old with a specific mitochondrial variant, particular lab values, and a surgical history at a Toronto children's hospital could plausibly identify a real child — even without a name attached. Extra privacy safeguards are essential — here's what they are:
+        </div>
+        <div class="safeguard-defs">
+          <div class="safeguard-def">
+            <div class="safeguard-icon">🛡️</div>
+            <div>
+              <h5>Differential Privacy</h5>
+              <p>A mathematical technique that adds carefully calibrated random noise to data or model outputs. It provides a formal, provable guarantee that no single individual's data can significantly influence the result. The key parameter <strong>epsilon (ε)</strong> controls the tradeoff: a smaller ε means stronger privacy but noisier, less useful data.</p>
+              <p class="safeguard-applied"><strong>Applied to rare conditions:</strong> Before releasing a synthetic dataset of rare cardiac defects, differential privacy would add controlled noise to variables like age, weight, and procedure type — making it mathematically impossible to determine whether any specific child's record was in the training data, even if an attacker has external knowledge about that child.</p>
+            </div>
+          </div>
+          <div class="safeguard-def">
+            <div class="safeguard-icon">👥</div>
+            <div>
+              <h5>k-Anonymity Checks</h5>
+              <p>A privacy test that ensures every combination of identifying attributes in the dataset applies to at least <strong>k</strong> different records. If k=5, then no combination of age, diagnosis, sex, and hospital unit can appear fewer than 5 times. Any record that would be unique (k=1) is flagged as a re-identification risk.</p>
+              <p class="safeguard-applied"><strong>Applied to rare conditions:</strong> After generating synthetic records for pediatric stroke patients, a k-anonymity check would flag that there's only one synthetic 3-year-old female with a posterior circulation stroke. That record would be suppressed or generalized (e.g., age broadened to "2–5 years") before the dataset is released.</p>
+            </div>
+          </div>
+          <div class="safeguard-def">
+            <div class="safeguard-icon">🚫</div>
+            <div>
+              <h5>Suppression of Rare Attribute Combinations</h5>
+              <p>A straightforward approach where records containing unusual combinations of variables are removed from the synthetic dataset entirely. If a combination of features is so specific that it could plausibly point to a real individual, the record is deleted rather than released.</p>
+              <p class="safeguard-applied"><strong>Applied to rare conditions:</strong> A synthetic record for a patient with Leigh syndrome + a specific mitochondrial DNA variant + a liver transplant at SickKids would be suppressed — that combination is so rare it could functionally identify a real child even without a name. The synthetic dataset ships with that record removed and a note that certain ultra-rare combinations were excluded for privacy.</p>
+            </div>
+          </div>
         </div>
       </div>
       <div class="suit-meters">
