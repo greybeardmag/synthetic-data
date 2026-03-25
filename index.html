@@ -1086,6 +1086,88 @@
     color: var(--ice) !important;
   }
 
+  .bc-example {
+    margin-top: 1.1rem;
+    background: rgba(90,113,148,0.06);
+    border: 1px solid rgba(90,113,148,0.1);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+  }
+
+  .bc-example-label {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--coral-light);
+    margin-bottom: 0.65rem;
+  }
+
+  .bc-example h5 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .bc-example p {
+    font-size: 0.84rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 0.6rem;
+  }
+
+  .bc-example p:last-child { margin-bottom: 0; }
+
+  .bc-example strong { color: var(--white); font-weight: 500; }
+
+  .bc-example-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0.75rem 0;
+  }
+
+  .bc-example-step {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .bc-step-num {
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: rgba(255,107,107,0.1);
+    color: var(--coral-light);
+    border: 1px solid rgba(255,107,107,0.2);
+    margin-top: 0.1rem;
+  }
+
+  .bc-example-step p { margin-bottom: 0; }
+
+  .bc-example-outcome {
+    margin-top: 0.85rem;
+    padding: 0.65rem 0.85rem;
+    background: rgba(255,107,107,0.04);
+    border-left: 3px solid var(--coral);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+    font-size: 0.82rem;
+    color: var(--ice);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .bc-example-outcome strong { color: var(--coral-light); }
+
   @media (max-width: 900px) {
     .safeguard-def { flex-direction: column; gap: 0.5rem; }
     .safeguard-icon { min-width: auto; text-align: left; }
@@ -1706,6 +1788,36 @@
     <div class="bc-card challenge fade-in">
       <h3><span class="h-icon">⚠️</span>Fidelity & <span class="term" onclick="toggleTip(this)">Distribution Drift<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Distribution Drift</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When the statistical patterns in synthetic data gradually deviate from the real source data. This can happen during generation (the model subtly shifts averages, smooths out extremes, or alters relationships between variables) or over time (the real patient population changes but the synthetic dataset remains static).</span><span class="tooltip-example"><strong>Pediatric example</strong>If real SickKids data shows that 3% of asthma patients have a rare comorbidity, but the synthetic generator "drifts" this to 1.5%, any downstream research on that subgroup will underestimate its prevalence by half.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Dataset_shift" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
       <p>Synthetic generators can subtly distort correlations, flatten <span class="term" onclick="toggleTip(this)">rare signals<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Rare Signal Loss</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When a generative model fails to reproduce uncommon but clinically important patterns in the data. Models tend to learn the most common patterns well, but may smooth over or completely miss rare events — like unusual drug reactions, atypical presentations, or low-frequency diagnoses.</span><span class="tooltip-example"><strong>Why this matters in pediatrics</strong>A rare metabolic condition affecting 0.1% of SickKids patients might be absent entirely from the synthetic data because the generator didn't have enough examples to learn the pattern. Anyone using that synthetic data would have a blind spot for that condition.</span></span></span>, and introduce artifacts. In pediatrics — where rare diseases and edge cases are clinically critical — even small fidelity losses can produce misleading downstream analyses.</p>
+      <div class="bc-example">
+        <div class="bc-example-label">Worked Example — How Distribution Drift Plays Out</div>
+        <h5>Pediatric Sepsis Early Warning Model</h5>
+        <p>SickKids generates a synthetic dataset of 2,000 pediatric sepsis encounters to license to a company building an early warning score. Here's how fidelity loss and drift compound into clinical danger:</p>
+        <div class="bc-example-steps">
+          <div class="bc-example-step">
+            <div class="bc-step-num" style="background:rgba(255,199,95,0.1); color:var(--amber); border-color:rgba(255,199,95,0.2);">1</div>
+            <p><strong>Correlation flattening during generation.</strong> In the real data, there is a critical clinical correlation: neonates with sepsis often present with <em>hypothermia</em> (low temperature) rather than fever — the opposite of older children. This pattern appears in ~18% of sepsis cases under 60 days. The GAN, optimizing for overall statistical fit, learns that sepsis = fever because that's the dominant pattern. Hypothermic sepsis in neonates drops from 18% to 6% in the synthetic data.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num" style="background:rgba(255,199,95,0.1); color:var(--amber); border-color:rgba(255,199,95,0.2);">2</div>
+            <p><strong>Tail truncation on lab values.</strong> Real sepsis data includes a critical tail: ~8% of patients have lactate values above 6 mmol/L, signaling severe tissue hypoperfusion. The synthetic generator smooths the lactate distribution toward the mean, and extreme values above 5.5 mmol/L virtually disappear. The synthetic dataset looks statistically reasonable at a glance — the mean and standard deviation of lactate are close to the real data — but the clinically dangerous tail is gone.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num" style="background:rgba(255,199,95,0.1); color:var(--amber); border-color:rgba(255,199,95,0.2);">3</div>
+            <p><strong>Temporal drift after release.</strong> The synthetic dataset is generated in 2026 based on source data from 2020–2025. By 2027, SickKids' real sepsis population has shifted: a new RSV-bacterial co-infection pattern has emerged post-pandemic, antibiotic stewardship has changed empiric therapy practices, and the hospital now sees more immunocompromised oncology patients with atypical sepsis presentations. The synthetic dataset — still being sold — no longer reflects current clinical reality.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num" style="background:rgba(255,199,95,0.1); color:var(--amber); border-color:rgba(255,199,95,0.2);">4</div>
+            <p><strong>The downstream model has blind spots.</strong> A sepsis early warning tool trained on this synthetic data learns that "high temperature + elevated WBC = sepsis risk." It performs well for the textbook presentation. But it misses the hypothermic neonate (because the generator flattened that signal), fails to flag critically elevated lactate (because it never saw values that high), and doesn't recognize the new co-infection patterns (because the data is temporally stale).</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num" style="background:rgba(255,199,95,0.1); color:var(--amber); border-color:rgba(255,199,95,0.2);">5</div>
+            <p><strong>The missed sepsis case.</strong> A 3-week-old presents to an ED using this tool. Temperature is 35.8°C, WBC is normal, but lactate is 7.2 mmol/L. The model scores the patient as low risk — no fever, no leukocytosis. The tool has never learned that this constellation in a neonate is a red flag. The real pattern was in SickKids' source data, but the synthetic generator erased it.</p>
+          </div>
+        </div>
+        <div class="bc-example-outcome" style="background:rgba(255,199,95,0.04); border-color:var(--amber);">
+          <strong style="color:var(--amber);">The takeaway:</strong> Fidelity loss isn't random noise — it's systematically biased toward erasing exactly the patterns that matter most: rare presentations, extreme values, and atypical correlations. A synthetic dataset can pass standard statistical validation tests (mean, SD, basic correlations) while being clinically dangerous at the tails. Validation must include domain-expert review of edge cases and longitudinal versioning to prevent temporal staleness.
+        </div>
+      </div>
     </div>
     <div class="bc-card challenge fade-in">
       <h3><span class="h-icon">🔓</span><span class="term" onclick="toggleTip(this)">Re-Identification Risk<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Re-Identification Risk</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">The possibility that someone could use a synthetic dataset — even though it contains no real identifiers — to infer or determine the identity of a real individual whose data was used in training. This is especially concerning when the original dataset contains rare or unique combinations of attributes.</span><span class="tooltip-example"><strong>Pediatric risk</strong>Imagine a synthetic record for a 7-year-old with a rare cardiac condition, a specific surgical history, and an uncommon ethnic background at a Toronto hospital. Even without a name, that combination might uniquely identify a real child.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Data_re-identification" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
@@ -1718,6 +1830,36 @@
     <div class="bc-card challenge fade-in">
       <h3><span class="h-icon">🧬</span><span class="term" onclick="toggleTip(this)">Bias Amplification<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Bias Amplification</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">When a generative model not only reproduces existing biases in the training data, but actually makes them worse. If certain populations are underrepresented in the source data, the synthetic generator may further reduce their representation — or learn incorrect patterns about them due to having too few examples.</span><span class="tooltip-example"><strong>How it happens</strong>If only 2% of SickKids' source data represents Indigenous children (vs. ~8% of Ontario's child population), a GAN might learn that "typical" patients don't look like Indigenous children. The synthetic data then underrepresents them even further — and any AI models trained on it will perform worse for that group.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Algorithmic_bias" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span></h3>
       <p>If real SickKids data contains demographic under-representation (e.g., Indigenous populations, rural communities), synthetic generation can amplify these biases. Models trained on biased synthetic data may perpetuate <span class="term" onclick="toggleTip(this)">health inequities<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Health Inequities</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">Systematic, avoidable, and unfair differences in health outcomes between population groups. Unlike simple health "differences," inequities are rooted in social, economic, and structural factors — and are considered unjust. Using biased data to train clinical tools risks encoding these inequities into automated systems.</span><span class="tooltip-example"><strong>The concern</strong>If an AI diagnostic tool is trained on synthetic data that underrepresents certain ethnic groups, it may perform less accurately for those groups — effectively providing worse care to populations that already face barriers to healthcare access.</span></span></span> at scale.</p>
+      <div class="bc-example">
+        <div class="bc-example-label">Worked Example — How Bias Amplification Plays Out</div>
+        <h5>Pediatric Asthma Severity Prediction Model</h5>
+        <p>Imagine SickKids creates a synthetic dataset of 50,000 pediatric asthma ED visits to sell to an AI company building an asthma severity prediction tool. Here's how bias can cascade:</p>
+        <div class="bc-example-steps">
+          <div class="bc-example-step">
+            <div class="bc-step-num">1</div>
+            <p><strong>Real data reflects existing disparities.</strong> SickKids' real asthma data is ~68% from Toronto's urban core. Only ~4% of records are from Indigenous children, despite Indigenous children having 2–3× higher asthma hospitalization rates nationally. Why? Families in remote communities often present to local hospitals first, not SickKids.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num">2</div>
+            <p><strong>The generator learns "typical" = urban, non-Indigenous.</strong> A GAN trained on this data learns that the statistically dominant pattern is an urban child with certain environmental triggers, medication access patterns, and follow-up adherence. Indigenous children's distinct patterns — different environmental exposures, medication access barriers, higher severity at presentation — are treated as noise because there are too few examples.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num">3</div>
+            <p><strong>Synthetic data shrinks the minority further.</strong> The synthetic dataset reduces Indigenous representation from 4% to 1.5%. Worse, the few Indigenous synthetic records the model does generate look statistically similar to the urban majority — losing the distinct clinical patterns that actually characterize these presentations.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num">4</div>
+            <p><strong>The downstream AI model encodes the bias.</strong> The AI company trains their severity prediction model on this synthetic data. It performs well for urban, non-Indigenous children (88% accuracy). But for Indigenous children, accuracy drops to 61% — it consistently underestimates severity because it never learned the patterns of late presentation, limited prior medication use, and higher baseline inflammation.</p>
+          </div>
+          <div class="bc-example-step">
+            <div class="bc-step-num">5</div>
+            <p><strong>The model is deployed nationally.</strong> A health system in Manitoba adopts the tool. Indigenous children presenting with severe asthma are triaged as moderate because the model has never seen their pattern. A child who should have been started on IV magnesium gets oral prednisone and a 4-hour reassessment. The bias in SickKids' source data, amplified by the synthetic generator, has now produced a measurable patient safety gap 2,000 km away.</p>
+          </div>
+        </div>
+        <div class="bc-example-outcome">
+          <strong>The takeaway:</strong> Bias amplification isn't an abstract fairness concern — it's a patient safety issue. Any synthetic data commercialization program must include bias audits comparing demographic distributions in the synthetic data against known population-level prevalence, not just against the source data (which is itself biased).
+        </div>
+      </div>
     </div>
     <div class="bc-card challenge fade-in">
       <h3><span class="h-icon">🏥</span>Clinician Distrust</h3>
