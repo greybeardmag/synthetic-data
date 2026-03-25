@@ -1083,8 +1083,8 @@
 
   /* ─── GENERATION METHODS COMPARISON ─── */
   .gen-methods {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     margin-top: 2rem;
   }
@@ -1093,38 +1093,117 @@
     background: var(--deep);
     border: 1px solid rgba(90,113,148,0.15);
     border-radius: var(--radius);
-    padding: 1.5rem;
-    text-align: center;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
     transition: border-color 0.3s;
   }
 
   .gen-method:hover { border-color: rgba(0,201,167,0.3); }
 
+  .gen-method-left { }
+
+  .gen-method-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
   .gen-method .method-icon {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,201,167,0.08);
+    border-radius: var(--radius-xs);
   }
 
   .gen-method h4 {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: var(--white);
     font-weight: 600;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0;
   }
 
-  .gen-method p {
-    font-size: 0.78rem;
+  .gen-method h4 span {
+    display: block;
+    font-size: 0.72rem;
     color: var(--steel);
+    font-weight: 400;
+    margin-top: 0.15rem;
+  }
+
+  .gen-method-desc {
+    font-size: 0.88rem;
+    color: var(--ice);
     font-weight: 300;
-    line-height: 1.5;
+    line-height: 1.75;
+    margin-bottom: 0.85rem;
   }
 
   .gen-method .strength {
-    margin-top: 0.75rem;
+    display: inline-block;
+    margin-top: 0.25rem;
     font-size: 0.7rem;
     font-family: 'IBM Plex Mono', monospace;
     color: var(--teal);
     letter-spacing: 0.04em;
+    padding: 0.25rem 0.7rem;
+    background: rgba(0,201,167,0.08);
+    border-radius: 100px;
+  }
+
+  .gen-method-example {
+    background: rgba(90,113,148,0.06);
+    border: 1px solid rgba(90,113,148,0.1);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+  }
+
+  .gen-method-example-label {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    margin-bottom: 0.65rem;
+  }
+
+  .gen-method-example h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .gen-method-example p {
+    font-size: 0.82rem;
+    color: var(--silver);
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+  }
+
+  .gen-method-example p:last-child { margin-bottom: 0; }
+
+  .gen-method-example .example-note {
+    margin-top: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(90,113,148,0.1);
+    font-size: 0.75rem;
+    color: var(--steel);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .gen-method { grid-template-columns: 1fr; }
   }
 
   /* ─── TOOLTIPS ─── */
@@ -1426,36 +1505,97 @@
     <span class="section-label">Generation Techniques</span>
     <h3>Common Approaches to Synthetic Data Generation</h3>
     <div class="gen-methods">
+
       <div class="gen-method">
-        <div class="method-icon">🔄</div>
-        <h4>GANs</h4>
-        <p>Generative Adversarial Networks pit a generator vs. discriminator to produce realistic records</p>
-        <div class="strength">Best for: EHR tabular data, imaging</div>
+        <div class="gen-method-left">
+          <div class="gen-method-header">
+            <div class="method-icon">🔄</div>
+            <h4>GANs<span>Generative Adversarial Networks</span></h4>
+          </div>
+          <p class="gen-method-desc">Two neural networks compete against each other: a <strong>generator</strong> creates fake data, and a <strong>discriminator</strong> tries to tell real from fake. They train in a loop — the generator keeps improving its fakes until the discriminator can't distinguish them from real records. The result is highly realistic synthetic data.</p>
+          <div class="strength">Best for: EHR tabular data, medical imaging</div>
+        </div>
+        <div class="gen-method-example">
+          <div class="gen-method-example-label">SickKids Example</div>
+          <h5>Synthetic Pediatric Chest X-Rays</h5>
+          <p>A GAN trained on 50,000 real pediatric chest X-rays from SickKids learns the visual patterns of pneumonia, bronchiolitis, and normal findings across different age groups. It then generates thousands of new X-ray images that look clinically realistic — showing realistic lung opacities, cardiac silhouettes, and age-appropriate anatomy — but don't correspond to any real patient.</p>
+          <p>An AI company building a pediatric pneumonia detection model buys these synthetic images to train their algorithm without ever accessing real patient scans.</p>
+          <div class="example-note">GANs can struggle with "mode collapse" — generating only a narrow range of outputs. For rare findings (e.g., diaphragmatic hernia), the GAN may not produce enough variety.</div>
+        </div>
       </div>
+
       <div class="gen-method">
-        <div class="method-icon">📐</div>
-        <h4>VAEs</h4>
-        <p>Variational Autoencoders learn compressed latent representations and sample new data points</p>
-        <div class="strength">Best for: Continuous variables, lab values</div>
+        <div class="gen-method-left">
+          <div class="gen-method-header">
+            <div class="method-icon">📐</div>
+            <h4>VAEs<span>Variational Autoencoders</span></h4>
+          </div>
+          <p class="gen-method-desc">VAEs work by compressing real data into a compact mathematical summary (a "latent space"), then learning to reconstruct data from that summary. To generate new synthetic records, you sample new points from this compressed space and the model expands them into full, realistic records. Unlike GANs, VAEs are more stable to train and produce smoother, more continuous outputs.</p>
+          <div class="strength">Best for: Continuous lab values, vital signs, growth curves</div>
+        </div>
+        <div class="gen-method-example">
+          <div class="gen-method-example-label">SickKids Example</div>
+          <h5>Synthetic Lab Panels for DKA Patients</h5>
+          <p>A VAE is trained on the admission lab panels of 800 pediatric DKA presentations: blood glucose, pH, bicarbonate, potassium, anion gap, and their relationships to age, weight, and severity. The model learns how these values correlate — for example, that very low pH typically co-occurs with high glucose and low bicarbonate in specific patterns.</p>
+          <p>It then generates 10,000 synthetic lab panels that preserve these clinically meaningful correlations. A researcher uses this dataset to develop a severity-scoring algorithm without needing access to real patient labs.</p>
+          <div class="example-note">VAEs tend to produce slightly "blurry" outputs — averages are well-preserved but extreme values (very high glucose, critically low pH) may be underrepresented.</div>
+        </div>
       </div>
+
       <div class="gen-method">
-        <div class="method-icon">🌊</div>
-        <h4>Diffusion Models</h4>
-        <p>Iteratively denoise random noise into structured data, offering high fidelity output</p>
-        <div class="strength">Best for: Medical imaging, complex distributions</div>
+        <div class="gen-method-left">
+          <div class="gen-method-header">
+            <div class="method-icon">🌊</div>
+            <h4>Diffusion Models<span>Denoising Diffusion Probabilistic Models</span></h4>
+          </div>
+          <p class="gen-method-desc">Diffusion models work in two phases: first, they gradually add random noise to real data until it becomes pure static. Then, they train a model to reverse this process — learning to start from noise and step-by-step remove it to produce clean, realistic output. This is the same core technology behind DALL-E and Midjourney. They currently produce the highest-fidelity outputs of any generative approach.</p>
+          <div class="strength">Best for: Medical imaging, complex multi-variable distributions</div>
+        </div>
+        <div class="gen-method-example">
+          <div class="gen-method-example-label">SickKids Example</div>
+          <h5>Synthetic Brain MRIs for Pediatric Epilepsy</h5>
+          <p>A diffusion model trained on 5,000 pediatric brain MRIs learns the full spectrum of normal and abnormal findings — cortical dysplasia, hippocampal sclerosis, focal lesions — across age groups from neonates to adolescents. It generates new MRI volumes that preserve subtle anatomical details and pathological patterns with higher fidelity than GANs or VAEs.</p>
+          <p>A medtech company developing an AI seizure-focus localization tool licenses these synthetic scans to train their model across diverse pathology types they couldn't assemble from a single institution alone.</p>
+          <div class="example-note">Diffusion models are computationally expensive — generating a single synthetic MRI volume can take minutes vs. milliseconds for a GAN. Scaling to large datasets requires significant GPU resources.</div>
+        </div>
       </div>
+
       <div class="gen-method">
-        <div class="method-icon">🌐</div>
-        <h4>Bayesian Networks</h4>
-        <p>Model conditional dependencies between variables as a directed acyclic graph</p>
-        <div class="strength">Best for: Interpretable clinical relationships</div>
+        <div class="gen-method-left">
+          <div class="gen-method-header">
+            <div class="method-icon">🌐</div>
+            <h4>Bayesian Networks<span>Probabilistic Graphical Models</span></h4>
+          </div>
+          <p class="gen-method-desc">Bayesian networks model data as a graph of connected nodes, where each node is a variable and each connection represents a conditional dependency. For example: "if age is &lt;2 AND temperature &gt;39°C, then probability of UTI is X%." They learn these conditional relationships from real data, then sample from the graph to generate new records that follow the same rules. They are the most interpretable approach — clinicians can inspect and understand the relationships.</p>
+          <div class="strength">Best for: Interpretable clinical relationships, structured EHR data</div>
+        </div>
+        <div class="gen-method-example">
+          <div class="gen-method-example-label">SickKids Example</div>
+          <h5>Synthetic ED Triage Data for Asthma Visits</h5>
+          <p>A Bayesian network trained on 15,000 pediatric asthma ED visits encodes the conditional relationships: age → severity, severity → O₂ sat, O₂ sat → disposition, prior admissions → length of stay, and so on. The resulting graph is inspectable — a clinician can verify that the model correctly links salbutamol doses to PRAM scores before any synthetic records are generated.</p>
+          <p>The synthetic dataset of 100,000 asthma visits is then used by a health system planning team to model ED flow patterns under different staffing scenarios.</p>
+          <div class="example-note">Bayesian networks require domain experts to define or validate the graph structure. They also struggle with high-dimensional data (many variables) and continuous values compared to deep learning approaches.</div>
+        </div>
       </div>
+
       <div class="gen-method">
-        <div class="method-icon">🤖</div>
-        <h4>LLMs</h4>
-        <p>Large language models generate synthetic clinical notes, discharge summaries, and narratives</p>
-        <div class="strength">Best for: Unstructured text, clinical notes</div>
+        <div class="gen-method-left">
+          <div class="gen-method-header">
+            <div class="method-icon">🤖</div>
+            <h4>LLMs<span>Large Language Models</span></h4>
+          </div>
+          <p class="gen-method-desc">Large language models (like GPT-4, Claude, Llama) can generate realistic free-text clinical narratives — the kinds of notes, summaries, and reports that make up a huge portion of health records but are nearly impossible to synthesize with statistical methods. By fine-tuning an LLM on real clinical text, the model learns medical terminology, documentation patterns, and clinical reasoning structure.</p>
+          <div class="strength">Best for: Unstructured text — clinical notes, discharge summaries, radiology reports</div>
+        </div>
+        <div class="gen-method-example">
+          <div class="gen-method-example-label">SickKids Example</div>
+          <h5>Synthetic Discharge Summaries for Seizure Admissions</h5>
+          <p>An LLM fine-tuned on 3,000 de-identified discharge summaries from SickKids neurology admissions learns the institutional writing style, common phrasing, medication documentation patterns, and the structure of follow-up plans. It then generates entirely new discharge summaries that read like they were written by a SickKids neurologist — but describe synthetic patients who never existed.</p>
+          <p>These synthetic notes are used to train an NLP model that extracts structured seizure type, medication, and EEG findings from free text — a task that previously required expensive manual chart review.</p>
+          <div class="example-note">LLM-generated text can "hallucinate" clinically implausible details (e.g., a medication dose that doesn't exist). Clinical review of a sample is essential. There's also a risk of memorizing and regurgitating distinctive phrases from real notes.</div>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
