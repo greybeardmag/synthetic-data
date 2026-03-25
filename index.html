@@ -1974,8 +1974,11 @@
   <!-- Privacy-Utility Tradeoff -->
   <div class="chart-box fade-in" style="margin-top:2rem">
     <h4>The Privacy–Utility Tradeoff</h4>
-    <p style="text-align:center; font-size:0.82rem; color:var(--steel); margin-bottom:1.5rem; font-weight:300;">
-      Higher fidelity increases research utility but also raises the risk of re-identifying real individuals. Finding the right balance is the central challenge.
+    <p style="text-align:center; font-size:0.88rem; color:var(--silver); margin-bottom:0.75rem; font-weight:300; max-width:750px; margin-left:auto; margin-right:auto; line-height:1.75;">
+      This is the fundamental tension in synthetic data: the more useful the data is for research and AI training, the more closely it must resemble real patient records — which inherently increases the risk that someone could link a synthetic record back to a real person. There is no way to fully eliminate this tradeoff; the goal is to find the right balance for each use case.
+    </p>
+    <p style="text-align:center; font-size:0.82rem; color:var(--steel); margin-bottom:2rem; font-weight:300; max-width:700px; margin-left:auto; margin-right:auto; line-height:1.7;">
+      Think of it like a volume dial: turning up "utility" (data accuracy) automatically turns up "risk" (re-identification potential). A children's hospital must set this dial more conservatively than an adult institution, because pediatric populations are smaller and rare conditions are more uniquely identifying.
     </p>
     <div class="tradeoff-scenarios">
       <div class="tradeoff-scenario">
@@ -1990,7 +1993,10 @@
             <div class="meter-track"><div class="meter-fill util" style="width:25%"></div></div>
           </div>
         </div>
-        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Noise + <span class="term" onclick="toggleTip(this)">differential privacy<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Differential Privacy</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A mathematical framework that guarantees an individual's data cannot significantly influence the output of a query or model. It works by adding carefully calibrated random noise to data or results. The key parameter epsilon (ε) controls the tradeoff: lower ε = more privacy but noisier results.</span><span class="tooltip-example"><strong>In practice</strong>Apple and Google use differential privacy to collect usage statistics from millions of devices without learning anything about individual users. In synthetic data, it adds a formal, provable privacy guarantee on top of the generation process.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Differential_privacy" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span>. Safe but limited analytical value.</p>
+        <p style="font-size:0.76rem;color:var(--ice);margin-top:0.85rem;line-height:1.65;font-weight:300;">Heavy noise injection and <span class="term" onclick="toggleTip(this)">differential privacy<span class="term-q">?</span><span class="tooltip-panel"><span class="tooltip-header"><span class="tooltip-title">Differential Privacy</span><button class="tooltip-close" onclick="event.stopPropagation();closeTips()">✕</button></span><span class="tooltip-body">A mathematical framework that guarantees an individual's data cannot significantly influence the output of a query or model. It works by adding carefully calibrated random noise to data or results. The key parameter epsilon (ε) controls the tradeoff: lower ε = more privacy but noisier results.</span><span class="tooltip-example"><strong>In practice</strong>Apple and Google use differential privacy to collect usage statistics from millions of devices without learning anything about individual users. In synthetic data, it adds a formal, provable privacy guarantee on top of the generation process.</span><a class="tooltip-link" href="https://en.wikipedia.org/wiki/Differential_privacy" target="_blank">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></span></span> guarantees make re-identification virtually impossible. But the data is so noisy that clinical correlations break down.</p>
+        <div style="margin-top:0.7rem;padding:0.6rem 0.75rem;background:rgba(90,113,148,0.06);border-radius:6px;border-left:3px solid var(--teal-dark);">
+          <p style="font-size:0.73rem;color:var(--steel);font-weight:300;line-height:1.6;margin:0;"><strong style="color:var(--silver);font-weight:500;">SickKids example:</strong> A synthetic dataset of bronchiolitis visits where the relationship between age, O₂ saturation, and admission has been deliberately scrambled. Safe to share publicly, but a researcher couldn't use it to answer "do younger infants with lower O₂ sats get admitted more?" — the signal has been destroyed.</p>
+        </div>
       </div>
       <div class="tradeoff-scenario" style="border-color:rgba(0,201,167,0.3)">
         <h5>⚖️ Optimal Balance</h5>
@@ -2004,7 +2010,10 @@
             <div class="meter-track"><div class="meter-fill util" style="width:75%"></div></div>
           </div>
         </div>
-        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Validated synthetic generation with disclosure testing. <strong style="color:var(--teal)">Recommended target.</strong></p>
+        <p style="font-size:0.76rem;color:var(--ice);margin-top:0.85rem;line-height:1.65;font-weight:300;">Validated synthetic generation that preserves key clinical relationships, combined with formal disclosure testing (nearest-neighbor distance, k-anonymity) before release. <strong style="color:var(--teal)">This is the recommended target for SickKids.</strong></p>
+        <div style="margin-top:0.7rem;padding:0.6rem 0.75rem;background:rgba(0,201,167,0.04);border-radius:6px;border-left:3px solid var(--teal);">
+          <p style="font-size:0.73rem;color:var(--steel);font-weight:300;line-height:1.6;margin:0;"><strong style="color:var(--silver);font-weight:500;">SickKids example:</strong> A synthetic dataset of 20,000 asthma ED visits where the correlation between PRAM scores, medication doses, and dispositions is preserved — a pharma company can meaningfully train models on it — but every record has been tested to ensure no synthetic patient is suspiciously close to any real patient in the source data. Rare attribute combinations that could identify a child are suppressed.</p>
+        </div>
       </div>
       <div class="tradeoff-scenario">
         <h5>🔬 Maximum Utility</h5>
@@ -2018,14 +2027,23 @@
             <div class="meter-track"><div class="meter-fill util" style="width:95%"></div></div>
           </div>
         </div>
-        <p style="font-size:0.72rem;color:var(--steel);margin-top:0.75rem">Near-replica fidelity. High risk for rare conditions and small cohorts.</p>
+        <p style="font-size:0.76rem;color:var(--ice);margin-top:0.85rem;line-height:1.65;font-weight:300;">Near-replica fidelity where synthetic records are almost indistinguishable from real ones. Maximum analytical power, but unacceptably high re-identification risk — especially for rare pediatric conditions and small cohorts.</p>
+        <div style="margin-top:0.7rem;padding:0.6rem 0.75rem;background:rgba(255,107,107,0.04);border-radius:6px;border-left:3px solid var(--coral);">
+          <p style="font-size:0.73rem;color:var(--steel);font-weight:300;line-height:1.6;margin:0;"><strong style="color:var(--silver);font-weight:500;">SickKids example:</strong> A synthetic record for a 6-year-old with Dravet syndrome, specific EEG findings, clobazam and stiripentol dosing, and three PICU admissions at SickKids. That combination is so specific that anyone with knowledge of the SickKids epilepsy program could plausibly identify the real patient. The data is analytically perfect but ethically indefensible for commercial release.</p>
+        </div>
       </div>
+    </div>
+    <div style="margin-top:1.5rem;padding:1rem 1.25rem;background:rgba(90,113,148,0.06);border:1px solid rgba(90,113,148,0.1);border-radius:10px;">
+      <p style="font-size:0.82rem;color:var(--ice);font-weight:300;line-height:1.7;margin:0;"><strong style="color:var(--white);font-weight:500;">Why this matters for commercialization:</strong> Every buyer of SickKids synthetic data will want the dial turned as far toward "utility" as possible — that's what makes the data valuable. SickKids' obligation is to hold the line at a privacy threshold that protects children, even when it means the product is less analytically powerful. The commercial strategy must price this tradeoff honestly: buyers get data that's good enough for most AI training and research, but not so faithful that it risks exposing real patients. Buyers wanting near-replica fidelity should be directed to formal research partnerships with REB oversight instead.</p>
     </div>
   </div>
 
   <!-- Fidelity Spectrum -->
   <div class="chart-box fade-in" style="margin-top:2rem">
     <h4>Fidelity Spectrum & Pediatric Risk</h4>
+    <p style="text-align:center; font-size:0.85rem; color:var(--silver); margin-bottom:0.5rem; font-weight:300; max-width:750px; margin-left:auto; margin-right:auto; line-height:1.7;">
+      "Fidelity" means how closely the synthetic data mirrors the real source data. Higher fidelity is better for research — but in pediatrics, it also increases the risk that a synthetic record could be traced back to a real child. This spectrum shows the four levels, from safest to riskiest.
+    </p>
     <div class="fidelity-spectrum">
       <div class="spectrum-labels">
         <span class="spectrum-label">Low Fidelity</span>
@@ -2033,27 +2051,56 @@
         <span class="spectrum-label" style="color:var(--teal)">High Fidelity</span>
       </div>
       <div class="spectrum-track"></div>
-      <div class="spectrum-markers">
-        <div class="spectrum-marker">
-          <div class="emoji">🧪</div>
-          <strong>Random / Noise</strong>
-          <p>Good for software testing.<br>Poor for research.</p>
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin-top:2rem;">
+
+        <div style="background:rgba(90,113,148,0.06); border:1px solid rgba(90,113,148,0.1); border-radius:10px; padding:1.1rem;">
+          <div class="emoji" style="text-align:center;">🧪</div>
+          <strong style="display:block; text-align:center; color:var(--white); font-size:0.88rem; margin:0.4rem 0;">Random / Noise</strong>
+          <p style="font-size:0.78rem; color:var(--silver); font-weight:300; line-height:1.6; margin-bottom:0.6rem;">Completely artificial data with no relationship to real patient records. Variables are randomly generated within plausible ranges but don't reflect actual clinical patterns or correlations.</p>
+          <p style="font-size:0.75rem; color:var(--teal); font-weight:500; margin-bottom:0.4rem;">Use case at SickKids:</p>
+          <p style="font-size:0.75rem; color:var(--steel); font-weight:300; line-height:1.55;">Populating a test EMR environment with fake patient records so developers can build and test new Epic/Meditech interfaces without touching real data. The records don't need to be clinically realistic — they just need to fill fields.</p>
+          <div style="margin-top:0.65rem; padding-top:0.5rem; border-top:1px solid rgba(90,113,148,0.1);">
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--teal);">PRIVACY: ●●●●● Very Safe</span><br>
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--coral);">UTILITY: ● Minimal</span>
+          </div>
         </div>
-        <div class="spectrum-marker">
-          <div class="emoji">📊</div>
-          <strong>Statistical Replica</strong>
-          <p>Preserves distributions.<br>May lose rare signals.</p>
+
+        <div style="background:rgba(90,113,148,0.06); border:1px solid rgba(90,113,148,0.1); border-radius:10px; padding:1.1rem;">
+          <div class="emoji" style="text-align:center;">📊</div>
+          <strong style="display:block; text-align:center; color:var(--white); font-size:0.88rem; margin:0.4rem 0;">Statistical Replica</strong>
+          <p style="font-size:0.78rem; color:var(--silver); font-weight:300; line-height:1.6; margin-bottom:0.6rem;">Synthetic data that preserves the basic statistical properties of the real dataset — means, standard deviations, proportions — but may not capture complex relationships between variables or rare subgroups.</p>
+          <p style="font-size:0.75rem; color:var(--teal); font-weight:500; margin-bottom:0.4rem;">Use case at SickKids:</p>
+          <p style="font-size:0.75rem; color:var(--steel); font-weight:300; line-height:1.55;">A researcher needs a dataset showing realistic age/sex distributions and diagnosis frequencies to prototype a dashboard before applying for REB approval to access real data. The synthetic set gets the shape right but shouldn't be used for clinical conclusions.</p>
+          <div style="margin-top:0.65rem; padding-top:0.5rem; border-top:1px solid rgba(90,113,148,0.1);">
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--teal);">PRIVACY: ●●●●○ Safe</span><br>
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--amber);">UTILITY: ●●○ Moderate</span>
+          </div>
         </div>
-        <div class="spectrum-marker">
-          <div class="emoji">🎯</div>
-          <strong>Deep Generative</strong>
-          <p>Preserves correlations.<br>Higher re-ID risk for rare conditions.</p>
+
+        <div style="background:rgba(90,113,148,0.06); border:1px solid rgba(0,201,167,0.15); border-radius:10px; padding:1.1rem;">
+          <div class="emoji" style="text-align:center;">🎯</div>
+          <strong style="display:block; text-align:center; color:var(--white); font-size:0.88rem; margin:0.4rem 0;">Deep Generative</strong>
+          <p style="font-size:0.78rem; color:var(--silver); font-weight:300; line-height:1.6; margin-bottom:0.6rem;">GAN/VAE/diffusion-generated data that preserves correlations between variables, temporal patterns, and multivariate relationships. Clinically realistic enough to train AI models and run meaningful analyses.</p>
+          <p style="font-size:0.75rem; color:var(--teal); font-weight:500; margin-bottom:0.4rem;">Use case at SickKids:</p>
+          <p style="font-size:0.75rem; color:var(--steel); font-weight:300; line-height:1.55;">A pharma company licenses a synthetic dataset of 20,000 pediatric asthma encounters to train a severity prediction model. The correlations between PRAM scores, O₂ sat, medication doses, and dispositions are clinically faithful. This is the commercial sweet spot.</p>
+          <div style="margin-top:0.65rem; padding-top:0.5rem; border-top:1px solid rgba(90,113,148,0.1);">
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--amber);">PRIVACY: ●●●○○ Moderate — needs re-ID testing</span><br>
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--teal);">UTILITY: ●●●●○ High</span>
+          </div>
         </div>
-        <div class="spectrum-marker">
-          <div class="emoji">⚠️</div>
-          <strong>Near-Replica</strong>
-          <p>Maximum utility.<br>Unacceptable for pediatric data.</p>
+
+        <div style="background:rgba(255,107,107,0.03); border:1px solid rgba(255,107,107,0.15); border-radius:10px; padding:1.1rem;">
+          <div class="emoji" style="text-align:center;">⚠️</div>
+          <strong style="display:block; text-align:center; color:var(--white); font-size:0.88rem; margin:0.4rem 0;">Near-Replica</strong>
+          <p style="font-size:0.78rem; color:var(--silver); font-weight:300; line-height:1.6; margin-bottom:0.6rem;">Synthetic data so close to the originals that individual records may functionally mirror real patients. Maximum analytical utility but unacceptable privacy risk — especially for pediatric populations where rare conditions make individuals uniquely identifiable.</p>
+          <p style="font-size:0.75rem; color:var(--coral-light); font-weight:500; margin-bottom:0.4rem;">Why this is off-limits for SickKids:</p>
+          <p style="font-size:0.75rem; color:var(--steel); font-weight:300; line-height:1.55;">A near-replica synthetic record of a child with Dravet syndrome, specific EEG patterns, and a particular medication history at a Toronto children's hospital is effectively that child's record with the name removed. No amount of downstream legal protection changes the ethical breach.</p>
+          <div style="margin-top:0.65rem; padding-top:0.5rem; border-top:1px solid rgba(255,107,107,0.08);">
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--coral);">PRIVACY: ●○○○○ Unacceptable</span><br>
+            <span style="font-size:0.65rem; font-family:'IBM Plex Mono',monospace; color:var(--teal);">UTILITY: ●●●●● Maximum</span>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
